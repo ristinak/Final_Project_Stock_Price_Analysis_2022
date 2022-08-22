@@ -20,6 +20,9 @@ object MainObject extends App {
   val dailyReturn = round(expr("(close - open)/open * 100"), 2)
   val df = dfWithDate.withColumn("dailyReturn_%", dailyReturn)
 
+  // saving this extended dataframe to a parquet file
+  df.write.mode("overwrite").parquet("src/resources/parquet/daily-returns.parquet")
+
   // Daily returns of all stocks by date
   println("Daily returns of all stocks by date:")
   df.orderBy("date").select("date", "ticker", "dailyReturn_%").show(10, false)
@@ -31,8 +34,10 @@ object MainObject extends App {
 
   // Average daily return of all stocks by date
   println("Average daily return of all stocks by date:")
-  val dfAvgReturn = df.groupBy("date").agg(avgDailyReturn)
-  dfAvgReturn.orderBy("date").show(20, false)
+  val dfAvgReturn = df.groupBy("date").agg(avgDailyReturn.as("average_return")).orderBy("date")
+  dfAvgReturn.show(20, false)
+  // saving daily return averages to a parquet file
+  dfAvgReturn.write.mode("overwrite").parquet("src/resources/parquet/average_return.parquet")
 
   // Most frequently traded stocks on any one day
   println("Most frequently traded stocks on a given day:")
@@ -62,6 +67,9 @@ object MainObject extends App {
     .withColumn("Annualized_Volatility", annVolatility)
 
   stdDevDF.orderBy(desc("Annualized_Volatility")).show()
+
+  println("Read the parquet file of average daily returns:")
+  spark.read.parquet("src/resources/parquet/average_return.parquet").show(20, false)
 //
 //  val maxVolume = max(col("volume")).over(windowSpec)
 //  val avgReturnAll = avg(col("dailyReturn")).over(windowSpec)
