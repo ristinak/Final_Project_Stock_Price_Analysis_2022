@@ -5,7 +5,7 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{asc, avg, col, desc, expr, lag, lit, round, sqrt, stddev, sum, to_date, to_timestamp, when}
 import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
-import org.apache.spark.ml.feature.RFormula
+import org.apache.spark.ml.feature.{RFormula, StringIndexer}
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.sql.{ColumnName, TypedColumn}
@@ -89,13 +89,23 @@ object MainObject extends App {
   val newDF = df.withColumn("change",
       when(col("dailyReturn_%") > 0, "UP")
     when(col("dailyReturn_%") < 0, "DOWN")
-//  when(col("dailyReturn_%") = 0, "UNCHANGED")
+  when(col("dailyReturn_%") === 0, "UNCHANGED")
   )
 
   println("************* The newDF with column change: **************")
   newDF.show(10, false)
 
-  val Array(train, test) = newDF.randomSplit(Array(0.7, 0.3))
+  val lblIndxr = new StringIndexer().setInputCol("ticker").setOutputCol("tickerInd")
+  val tickerIndDF = lblIndxr.fit(newDF).transform(newDF)
+  println("************* The newDF with ticker index: **************")
+  tickerIndDF.show(10, false)
+
+  val chgIndxr = new StringIndexer().setInputCol("change").setOutputCol("changeInd")
+  val changeIndDF = chgIndxr.fit(tickerIndDF).transform(tickerIndDF)
+  println("************* The newDF with change index: **************")
+  changeIndDF.show(10, false)
+
+  val Array(train, test) = changeIndDF.randomSplit(Array(0.7, 0.3))
 //  train.describe().show()
   //holdout set we will use test to see how well we did - it is crucial that none of these test data points were used in training
 //  test.describe().show()
@@ -119,10 +129,9 @@ object MainObject extends App {
   // (Test Evaluation,1.0)
   val params = new ParamGridBuilder()
     .addGrid(rForm.formula, Array(
-      "ticker ~ close",
-      "ticker ~ open + close"))
+      "changeInd ~ ."))
     .addGrid(lr.elasticNetParam, Array(0.0, 0.5, 1.0))
-    .addGrid(lr.regParam, Array(0.3, 2.0))
+    .addGrid(lr.regParam, Array(0.1, 2.0))
     .build()
 
   val evaluator = new BinaryClassificationEvaluator()
