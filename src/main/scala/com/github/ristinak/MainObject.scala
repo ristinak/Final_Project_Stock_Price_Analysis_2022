@@ -9,10 +9,16 @@ object MainObject extends App {
   println("Starting the final project")
 
   val spark = getSpark("Sparky")
-
   val dfOriginal = readDataWithView(spark, "src/resources/stock_prices_.csv")
+
+  // converting date to fit the format yyyy-MM-dd
+  spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
+  val dfWithDate = dfOriginal
+    .withColumn("date", to_date(col("date"), "yyyy-MM-dd"))
+
+  // adding column dailyReturn_% to our dataframe
   val dailyReturn = round(expr("(close - open)/open * 100"), 2)
-  val df = dfOriginal.withColumn("dailyReturn_%", dailyReturn)
+  val df = dfWithDate.withColumn("dailyReturn_%", dailyReturn)
 
   // Daily returns of all stocks by date
   println("Daily returns of all stocks by date:")
@@ -32,7 +38,7 @@ object MainObject extends App {
   println("Most frequently traded stocks on a given day:")
   val frequency = col("volume") * col("close")
   val dfFreq = df.withColumn("frequency", frequency)
-  dfFreq.orderBy(desc("frequency")).show(20, false)
+  dfFreq.orderBy(desc("frequency")).show(10, false)
 
   // Most frequently traded stocks on average
   println("Most frequently traded stocks on average:")
