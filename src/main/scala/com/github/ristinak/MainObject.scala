@@ -42,47 +42,22 @@ object MainObject extends App {
     .orderBy(desc("avgFrequency"))
     .show(10, false)
 
-  // Standard deviation of daily returns
-  println("Standard deviation of daily returns:")
-  dfAvgReturn.agg(stddev("avgDailyReturn_%")).show()
-
-  // Apple standard deviation
-  println("Apple standard deviation:")
-  val dfAAPL = df.where(col("ticker")==="AAPL")
-  val aaplStdDev = dfAAPL.agg(stddev("dailyReturn_%").as("Standard_deviation_%"))
-    .withColumn("Annualized_standard_deviation_%", col("Standard_deviation_%") * lit(15.8745))
-  aaplStdDev.show()
-//  println("Apple annualized standard deviation:")
-//  val aaplStdDevAnnual = expr(aaplStdDev * lit(15.8745079))
-//  aaplStdDevAnnual.show()
-
 
 //  val windowSpec = Window
-//    .partitionBy("date")
+//    .partitionBy("ticker")
 //    .rowsBetween(Window.unboundedPreceding, Window.currentRow)
+
+  // Average and annualized average standard deviation of daily returns (volatility)
+  println("Stocks ordered by annualized volatility, %:")
+
+  val volatility = round(stddev("dailyReturn_%"),2)
+  val annVolatility = round(col("Volatility") * sqrt(lit(252)),2)
+  val stdDevDF = df.groupBy("ticker").agg(volatility.as("Volatility"))
+    .withColumn("Annualized_Volatility", annVolatility)
+
+  stdDevDF.orderBy(desc("Annualized_Volatility")).show()
 //
 //  val maxVolume = max(col("volume")).over(windowSpec)
 //  val avgReturnAll = avg(col("dailyReturn")).over(windowSpec)
-
-//  println("df with date, max volume, and avgReturn_All:")
-//  df.orderBy("date")
-////    .groupBy("date")
-//    .withColumn("avgReturn_All", avgReturnAll)
-//    .withColumn("maxVolume", maxVolume)
-//    .select("date", "maxVolume", "avgReturn_All")
-//    .show(10, false)
-//
-//  df.orderBy("date").groupBy("date").sum("dailyReturn").show(20, false)
-
-//  df.withColumn("avgReturn_All", avgReturnAll).show(10, false)
-
-//  val dfRolledUp = df.rollup("date", "ticker")
-////    .agg(avg("dailyReturn").as("avgDailyReturn"))
-//    .select("date", "ticker", "dailyReturn")
-//    .orderBy("date", "ticker")
-
-//  println("dfRolledUp:")
-//  dfRolledUp.show(20, false)
-
 
 }
