@@ -5,7 +5,7 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{asc, avg, col, desc, expr, lag, lit, round, sqrt, stddev, sum, to_date, to_timestamp, when}
 import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
-import org.apache.spark.ml.feature.{RFormula, StringIndexer}
+import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StringIndexer}
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.sql.{ColumnName, TypedColumn}
@@ -87,33 +87,42 @@ object MainObject extends App {
   println("************* The newDF with the column 'change': **************")
   newDF.show(10, false)
 
-  // Indexing the ticker column in order to include it in the feature
-  val tickerInd = new StringIndexer().setInputCol("ticker").setOutputCol("tickerInd")
-  val tickerIndDF = tickerInd.fit(newDF).transform(newDF)
-  println("************* The newDF with ticker index: **************")
-  tickerIndDF.show(10, false)
 
-  // Indexing the change column
-  val chgInd = new StringIndexer().setInputCol("change").setOutputCol("changeInd")
-  val changeIndDF = chgInd.fit(tickerIndDF).transform(tickerIndDF)
-  println("************* The newDF with change index: **************")
-  changeIndDF.show(10, false)
+  // trying the new indexing and encoding of strings //
+  val indexer = new StringIndexer()
+    .setInputCols(Array("ticker", "change"))
+    .setOutputCols(Array("ticker_index", "change_index"))
 
-  val Array(train, test) = changeIndDF.randomSplit(Array(0.7, 0.3))
-//  train.describe().show()
-  //holdout set we will use test to see how well we did - it is crucial that none of these test data points were used in training
-//  test.describe().show()
+  val encoder = new OneHotEncoder()
+    .setInputCols(Array("ticker_index", "change_index"))
+    .setOutputCols(Array("ticker_encoded", "change_encoded"))
+
+//  // Indexing the ticker column in order to include it in the feature
+//  val tickerInd = new StringIndexer().setInputCol("ticker").setOutputCol("tickerInd")
+//  val tickerIndDF = tickerInd.fit(newDF).transform(newDF)
+//  println("************* The newDF with ticker index: **************")
+//  tickerIndDF.show(10, false)
+//
+//  // Indexing the change column
+//  val chgInd = new StringIndexer().setInputCol("change").setOutputCol("changeInd")
+//  val changeIndDF = chgInd.fit(tickerIndDF).transform(tickerIndDF)
+//  println("************* The newDF with change index: **************")
+//  changeIndDF.show(10, false)
+
+//  val Array(train, test) = changeIndDF.randomSplit(Array(0.7, 0.3))
+  val Array(train, test) = newDF.randomSplit(Array(0.7, 0.3))
 
   val rForm = new RFormula()
   val lr = new LogisticRegression()
-  val stages = Array(rForm, lr)
+//  val stages = Array(rForm, lr)
+  val stages = Array(indexer, encoder, rForm, lr)
   val pipeline = new Pipeline().setStages(stages)
 
 
   // (Test Evaluation,0.997)
   val params = new ParamGridBuilder()
     .addGrid(rForm.formula, Array(
-      "changeInd ~ ."))
+      "change_index ~ ."))
     .addGrid(lr.elasticNetParam, Array(0.0, 0.5, 1.0))
     .addGrid(lr.regParam, Array(0.1, 2.0))
     .build()
@@ -137,7 +146,7 @@ object MainObject extends App {
   tvsFitted.transform(test).show(20, false)
 
   val trainedPipeline = tvsFitted.bestModel.asInstanceOf[PipelineModel]
-  val TrainedLR = trainedPipeline.stages(1).asInstanceOf[LogisticRegressionModel]
+  val TrainedLR = trainedPipeline.stages(3).asInstanceOf[LogisticRegressionModel]
   val summaryLR = TrainedLR.summary
   summaryLR.objectiveHistory
   //Persisting and Applying Models
