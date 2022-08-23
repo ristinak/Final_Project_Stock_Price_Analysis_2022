@@ -13,9 +13,10 @@ import org.apache.spark.sql.{ColumnName, TypedColumn}
 object MainObject extends App {
 
   println("Starting the final project")
-
   val spark = getSpark("Sparky")
-  val dfOriginal = readDataWithView(spark, "src/resources/stock_prices_.csv")
+
+  // saving the dataframe and dropping any null values
+  val dfOriginal = readDataWithView(spark, "src/resources/stock_prices_.csv").na.drop("any")
 
   // converting date to fit the format yyyy-MM-dd
   spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
@@ -35,7 +36,7 @@ object MainObject extends App {
 
   // Average daily return of every stock
   println("Average daily return of every stock:")
-  val avgDailyReturn = round(avg(col("dailyReturn_%")),2).as("avgDailyReturn_%")
+  val avgDailyReturn = round(avg(col("dailyReturn_%")),3).as("avgDailyReturn_%")
   df.groupBy("ticker").agg(avgDailyReturn).show(20, false)
 
   // Average daily return of all stocks by date
@@ -77,31 +78,24 @@ object MainObject extends App {
 
 // ******************* Building a model *******************
 
-//    val windowSpec = Window
-//      .partitionBy("ticker")
-//      .orderBy("date")
-//      .rowsBetween(Window.unboundedPreceding, Window.currentRow)
-//
-//  val priceChange = col("close") - lag("close", 1).over(windowSpec)
-//  val newDF = dfWithDate.withColumn("priceChange", priceChange)
-
-
   val newDF = df.withColumn("change",
       when(col("dailyReturn_%") > 0, "UP")
     when(col("dailyReturn_%") < 0, "DOWN")
   when(col("dailyReturn_%") === 0, "UNCHANGED")
   )
 
-  println("************* The newDF with column change: **************")
+  println("************* The newDF with the column 'change': **************")
   newDF.show(10, false)
 
-  val lblIndxr = new StringIndexer().setInputCol("ticker").setOutputCol("tickerInd")
-  val tickerIndDF = lblIndxr.fit(newDF).transform(newDF)
+  // Indexing the ticker column in order to include it in the feature
+  val tickerInd = new StringIndexer().setInputCol("ticker").setOutputCol("tickerInd")
+  val tickerIndDF = tickerInd.fit(newDF).transform(newDF)
   println("************* The newDF with ticker index: **************")
   tickerIndDF.show(10, false)
 
-  val chgIndxr = new StringIndexer().setInputCol("change").setOutputCol("changeInd")
-  val changeIndDF = chgIndxr.fit(tickerIndDF).transform(tickerIndDF)
+  // Indexing the change column
+  val chgInd = new StringIndexer().setInputCol("change").setOutputCol("changeInd")
+  val changeIndDF = chgInd.fit(tickerIndDF).transform(tickerIndDF)
   println("************* The newDF with change index: **************")
   changeIndDF.show(10, false)
 
@@ -116,17 +110,7 @@ object MainObject extends App {
   val pipeline = new Pipeline().setStages(stages)
 
 
-  // (Test Evaluation,0.7262689691261119)
-//  val params = new ParamGridBuilder()
-//    .addGrid(rForm.formula, Array(
-////      "ticker ~ . + open:close",
-//      "ticker ~ open + close",
-//      "ticker ~ . + open:high + close:close"))
-//    .addGrid(lr.elasticNetParam, Array(0.0, 0.5, 1.0))
-//    .addGrid(lr.regParam, Array(0.1, 2.0))
-//    .build()
-
-  // (Test Evaluation,1.0)
+  // (Test Evaluation,0.997)
   val params = new ParamGridBuilder()
     .addGrid(rForm.formula, Array(
       "changeInd ~ ."))
@@ -140,16 +124,16 @@ object MainObject extends App {
     .setLabelCol("label")
 
   val tvs = new TrainValidationSplit()
-    .setTrainRatio(0.75) // also the default.
-    .setEstimatorParamMaps(params) //so this is grid of what different hyperparameters
+    .setTrainRatio(0.7) // the default is 0.75
+    .setEstimatorParamMaps(params) //so this is grid of different hyperparameters
     .setEstimator(pipeline) //these are the various tasks we want done /transformations /
     .setEvaluator(evaluator) //and this is the metric to judge our success
 
-  val tvsFitted = tvs.fit(train) //so this will actually do the work of fitting/making the best model
+  val tvsFitted = tvs.fit(train) // fitting/making the best model
 
   //And of course evaluate how it performs on the test set!
   println("Test Evaluation", evaluator.evaluate(tvsFitted.transform(test)))
-  println("tvsFitted.transform(test)")
+  println("Let's look at the prediction and how it compares to the real data:")
   tvsFitted.transform(test).show(20, false)
 
   val trainedPipeline = tvsFitted.bestModel.asInstanceOf[PipelineModel]
