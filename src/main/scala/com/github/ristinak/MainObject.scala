@@ -25,7 +25,7 @@ object MainObject {
     spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
     val dfWithDate = dfOriginal
       .withColumn("date", to_date(col("date"), "yyyy-MM-dd"))
-
+//nnn///
     // adding column dailyReturn_% to our dataframe
     val dailyReturn = round(expr("(close - open)/open * 100"), 4)
     val df = dfWithDate.withColumn("dailyReturn_%", dailyReturn)
