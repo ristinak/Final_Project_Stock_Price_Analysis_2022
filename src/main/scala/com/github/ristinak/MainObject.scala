@@ -109,29 +109,11 @@ object MainObject {
       .setInputCols(Array("ticker", "change"))
       .setOutputCols(Array("ticker_index", "change_index"))
 
-    val encoder = new OneHotEncoder()
-      .setInputCols(Array("ticker_index", "change_index"))
-      .setOutputCols(Array("ticker_encoded", "change_encoded"))
-
-  //  // Indexing the ticker column in order to include it in the feature
-  //  val tickerInd = new StringIndexer().setInputCol("ticker").setOutputCol("tickerInd")
-  //  val tickerIndDF = tickerInd.fit(newDF).transform(newDF)
-  //  println("************* The newDF with ticker index: **************")
-  //  tickerIndDF.show(10, false)
-  //
-  //  // Indexing the change column
-  //  val chgInd = new StringIndexer().setInputCol("change").setOutputCol("changeInd")
-  //  val changeIndDF = chgInd.fit(tickerIndDF).transform(tickerIndDF)
-  //  println("************* The newDF with change index: **************")
-  //  changeIndDF.show(10, false)
-
-  //  val Array(train, test) = changeIndDF.randomSplit(Array(0.7, 0.3))
     val Array(train, test) = newDF.randomSplit(Array(0.7, 0.3))
 
     val rForm = new RFormula()
     val lr = new LogisticRegression()
-  //  val stages = Array(rForm, lr)
-    val stages = Array(indexer, encoder, rForm, lr)
+    val stages = Array(indexer, rForm, lr)
     val pipeline = new Pipeline().setStages(stages)
 
 
@@ -164,7 +146,7 @@ object MainObject {
       .show(100, false)
 
     val trainedPipeline = tvsFitted.bestModel.asInstanceOf[PipelineModel]
-    val TrainedLR = trainedPipeline.stages(3).asInstanceOf[LogisticRegressionModel]
+    val TrainedLR = trainedPipeline.stages(2).asInstanceOf[LogisticRegressionModel]
     val summaryLR = TrainedLR.summary
     summaryLR.objectiveHistory
     //Persisting and Applying Models
