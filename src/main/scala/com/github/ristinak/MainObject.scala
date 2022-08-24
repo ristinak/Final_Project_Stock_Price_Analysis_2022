@@ -8,6 +8,11 @@ import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StringIndexer}
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 
+// TODO: copy-paste the showAccuracy method that Valdis wrote
+// TODO: write a model to predict the closing price (regression)
+// TODO: write scaladoc
+// TODO: check to see if another csv file can be used through environment parameters
+
 
 object MainObject {
 
