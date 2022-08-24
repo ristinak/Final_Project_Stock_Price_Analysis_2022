@@ -38,6 +38,7 @@ object csvCombiner extends App {
   val df = df1.union(df2).orderBy("date", "ticker")
   df.sample(0.5).show(40)
 
-  df.write.mode("overwrite").option("header", true).csv("src/resources/twitter_nvidia.csv")
+  val outputPath = "src/resources/twitter_nvidia.csv"
+  df.write.mode("overwrite").option("header", true).csv(outputPath)
 
 }

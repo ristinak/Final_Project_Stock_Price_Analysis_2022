@@ -8,10 +8,18 @@ import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StringIndexer}
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 
-// TODO: copy-paste the showAccuracy method that Valdis wrote
+// TODO?: copy-paste the showAccuracy method that Valdis wrote - maybe unnecessary?
 // TODO: write a model to predict the closing price (regression)
 // TODO: write scaladoc
-// TODO: check to see if another csv file can be used through environment parameters
+
+// DONE: check to see if another csv file can be used through program arguments:
+// In order to get the filepath for a different csv file, these steps are needed:
+// 1. download any two csv files from https://finance.yahoo.com/trending-tickers
+// 2. enter the filepaths for these csvs into csvCombiner.scala program
+// 3. change the outputPath value in csvCombiner.scala
+// 4. run the program
+// 5. the new filepath (outputPath) is now ready to be entered as 'program arguments':
+// in IntelliJ click Run -> Edit Configurations... -> enter the filepath into 'Program arguments'
 
 
 object MainObject {
