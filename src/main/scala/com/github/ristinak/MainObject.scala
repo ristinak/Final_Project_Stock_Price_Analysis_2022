@@ -4,7 +4,8 @@ import com.github.ristinak.SparkUtil.{getSpark, readDataWithView}
 import org.apache.spark.sql.functions.{avg, col, desc, expr, lit, round, sqrt, stddev, sum, to_date, to_timestamp, when}
 import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
-import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StringIndexer}
+import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StringIndexer, VectorAssembler}
+import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 
@@ -104,7 +105,7 @@ object MainObject {
     newDF.show(10, false)
 
 
-    // trying the new indexing and encoding of strings //
+    // indexing strings //
     val indexer = new StringIndexer()
       .setInputCols(Array("ticker", "change"))
       .setOutputCols(Array("ticker_index", "change_index"))
@@ -116,8 +117,6 @@ object MainObject {
     val stages = Array(indexer, rForm, lr)
     val pipeline = new Pipeline().setStages(stages)
 
-
-    // (Test Evaluation,0.997)
     val params = new ParamGridBuilder()
       .addGrid(rForm.formula, Array(
         "change_index ~ ."))
@@ -152,6 +151,65 @@ object MainObject {
     //Persisting and Applying Models
     //Now that we trained this model, we can persist it to disk to use it for prediction purposes later on:
     tvsFitted.write.overwrite().save("src/resources/tmp/modelLocation")
+
+      // *************** Linear regression *************** //
+
+      val dfRegr = df.withColumn("volume", col("volume").cast("double"))
+        .withColumn("date", col("date").cast("string"))
+
+      dfRegr.printSchema()
+      dfRegr.show(10, false)
+      dfRegr.describe().show(false)
+
+      val indexedDate = new StringIndexer()
+        .setInputCol("date")
+        .setOutputCol("indexedDate")
+
+      val indexedDateDfRegr = indexedDate.fit(dfRegr).transform(dfRegr)
+
+      val indexedTicker = new StringIndexer()
+        .setInputCol("ticker")
+        .setOutputCol("indexedTicker")
+
+      val indexedDfRegr = indexedTicker.fit(indexedDateDfRegr).transform(indexedDateDfRegr)
+
+      //val tknd = new Tokenizer()
+      //.setInputCol("ticker")
+      //.setOutputCol("tokenizedTicker")
+
+      //val tokenizedDfRegr = tknd.transform(dfRegr.select("ticker", "date", "high", "low", "open", "close", "volume", "dailyReturn_%"))
+      //.show(10, false)
+
+      //val usingRformula = new RFormula()
+      //.setFormula("close ~ .")
+      //.setLabelCol("label")
+      //.setFeaturesCol("features")
+
+      //val fittedfRegr = usingRformula.fit(indexedDfRegr).transform(indexedDfRegr)
+      //fittedfRegr.show(5, false)
+      //fittedfRegr.sample(0.1).show(5,false)
+
+      //val chgDate = new StringIndexer().setInputCol("date").setOutputCol("indexedDate")
+      //val changedDateDF = chgDate.fit(fittedfRegr).transform(fittedfRegr)
+
+      val vecAssembler = new VectorAssembler()
+        .setInputCols(Array("indexedDate", "open", "close", "high", "low", "volume", "indexedTicker", "dailyReturn_%"))
+        .setOutputCol("features")
+
+      val dfIncVector = vecAssembler.transform(indexedDfRegr)
+
+      val Array(trainData, testData) = dfIncVector.randomSplit(Array(0.7, 0.3))
+
+      dfIncVector.show(10, false)
+
+      val linearR = new LinearRegression()
+        .setFeaturesCol("features")
+        .setLabelCol("close")
+
+      val lrModel = linearR.fit(trainData).transform(testData)
+
+      lrModel.show(20, false)
+
 
 
 }}
