@@ -39,7 +39,7 @@ object MainObject {
     spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
     val dfWithDate = dfOriginal
       .withColumn("date", to_date(col("date"), "yyyy-MM-dd"))
-//nnn///
+
     // adding column dailyReturn_% to our dataframe
     val dailyReturn = round(expr("(close - open)/open * 100"), 4)
     val df = dfWithDate.withColumn("dailyReturn_%", dailyReturn)
@@ -151,65 +151,5 @@ object MainObject {
     //Persisting and Applying Models
     //Now that we trained this model, we can persist it to disk to use it for prediction purposes later on:
     tvsFitted.write.overwrite().save("src/resources/tmp/modelLocation")
-
-      // *************** Linear regression *************** //
-
-      val dfRegr = df.withColumn("volume", col("volume").cast("double"))
-        .withColumn("date", col("date").cast("string"))
-
-      dfRegr.printSchema()
-      dfRegr.show(10, false)
-      dfRegr.describe().show(false)
-
-      val indexedDate = new StringIndexer()
-        .setInputCol("date")
-        .setOutputCol("indexedDate")
-
-      val indexedDateDfRegr = indexedDate.fit(dfRegr).transform(dfRegr)
-
-      val indexedTicker = new StringIndexer()
-        .setInputCol("ticker")
-        .setOutputCol("indexedTicker")
-
-      val indexedDfRegr = indexedTicker.fit(indexedDateDfRegr).transform(indexedDateDfRegr)
-
-      //val tknd = new Tokenizer()
-      //.setInputCol("ticker")
-      //.setOutputCol("tokenizedTicker")
-
-      //val tokenizedDfRegr = tknd.transform(dfRegr.select("ticker", "date", "high", "low", "open", "close", "volume", "dailyReturn_%"))
-      //.show(10, false)
-
-      //val usingRformula = new RFormula()
-      //.setFormula("close ~ .")
-      //.setLabelCol("label")
-      //.setFeaturesCol("features")
-
-      //val fittedfRegr = usingRformula.fit(indexedDfRegr).transform(indexedDfRegr)
-      //fittedfRegr.show(5, false)
-      //fittedfRegr.sample(0.1).show(5,false)
-
-      //val chgDate = new StringIndexer().setInputCol("date").setOutputCol("indexedDate")
-      //val changedDateDF = chgDate.fit(fittedfRegr).transform(fittedfRegr)
-
-      val vecAssembler = new VectorAssembler()
-        .setInputCols(Array("indexedDate", "open", "close", "high", "low", "volume", "indexedTicker", "dailyReturn_%"))
-        .setOutputCol("features")
-
-      val dfIncVector = vecAssembler.transform(indexedDfRegr)
-
-      val Array(trainData, testData) = dfIncVector.randomSplit(Array(0.7, 0.3))
-
-      dfIncVector.show(10, false)
-
-      val linearR = new LinearRegression()
-        .setFeaturesCol("features")
-        .setLabelCol("close")
-
-      val lrModel = linearR.fit(trainData).transform(testData)
-
-      lrModel.show(20, false)
-
-
 
 }}
