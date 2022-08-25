@@ -3,11 +3,12 @@ package com.github.ristinak
 import com.github.ristinak.SparkUtil.{getSpark, readDataWithView}
 import org.apache.spark.sql.functions.{avg, col, desc, expr, lit, round, sqrt, stddev, sum, to_date, to_timestamp, when}
 import org.apache.spark.ml.classification.{DecisionTreeClassifier, LogisticRegression, LogisticRegressionModel, RandomForestClassifier}
-import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
+import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, RegressionEvaluator}
 import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StandardScaler, StringIndexer, Tokenizer, VectorAssembler}
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel, classification}
 import org.apache.spark.ml.regression.{LinearRegression, LinearRegressionModel, RandomForestRegressionModel}
+import org.apache.spark.sql.DataFrame
 
 object LinearRegression {
 
@@ -113,11 +114,15 @@ object LinearRegression {
 
     val dfIncVector = vecAssembler.transform(indexedDfRegr)
 
-    val Array(train, test) = dfIncVector.randomSplit(Array(0.7, 0.3))
+    //val Array(train, test) = dfIncVector.randomSplit(Array(0.7, 0.3))
+    val train = dfIncVector.where(col("date") < "2016-07-20")
+    val test = dfIncVector.where(col("date") >= "2016-07-20")
 
     dfIncVector.show(10, false)
 
     val lr = new LinearRegression()
+      .setMaxIter(10)
+      .setRegParam(0.3)
       .setFeaturesCol("features")
       .setLabelCol("close")
 
@@ -128,5 +133,16 @@ object LinearRegression {
 
     train.describe().show()
     test.describe().show()
+
+    def showAccuracy(df: DataFrame): Unit = {
+      val evaluator = new RegressionEvaluator()
+        .setMetricName("rmse") //rootMeanSquaredError
+        .setLabelCol("close")
+        .setPredictionCol("prediction")
+      val accuracy = evaluator.evaluate(df)
+      println(s"Accuracy: $accuracy") //hmmm...
+    }
+
+    showAccuracy(lrPredictions) // linear regression model
 
   }}
