@@ -16790,3 +16790,307 @@ Caused by: java.lang.IllegalArgumentException: Could not parse formula: dailyRet
 22/08/24 18:50:48 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
 22/08/24 18:50:49 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
 22/08/24 18:50:49 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 10:32:01 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 10:32:03 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 10:32:03 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 10:39:43 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 10:39:43 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 10:39:49 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 10:39:56 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/25 10:41:51 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 10:41:53 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 10:41:53 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 10:42:06 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/25 10:42:45 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 10:42:45 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 10:42:49 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 10:42:58 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/25 10:42:59 WARN util.Instrumentation: [8a578a45] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 10:42:59 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 11:11:40 ERROR util.Instrumentation: java.lang.IllegalArgumentException: requirement failed: The input column date must be either string type or numeric type, but got DateType.
+	at scala.Predef$.require(Predef.scala:337)
+	at org.apache.spark.ml.feature.StringIndexerBase.validateAndTransformField(StringIndexer.scala:107)
+	at org.apache.spark.ml.feature.StringIndexerBase.$anonfun$validateAndTransformSchema$2(StringIndexer.scala:126)
+	at scala.collection.ArrayOps$.flatMap$extension(ArrayOps.scala:964)
+	at org.apache.spark.ml.feature.StringIndexerBase.validateAndTransformSchema(StringIndexer.scala:123)
+	at org.apache.spark.ml.feature.StringIndexerBase.validateAndTransformSchema$(StringIndexer.scala:115)
+	at org.apache.spark.ml.feature.StringIndexer.validateAndTransformSchema(StringIndexer.scala:145)
+	at org.apache.spark.ml.feature.StringIndexer.transformSchema(StringIndexer.scala:252)
+	at org.apache.spark.ml.Pipeline.$anonfun$transformSchema$4(Pipeline.scala:183)
+	at scala.collection.ArrayOps$.foldLeft$extension(ArrayOps.scala:779)
+	at org.apache.spark.ml.Pipeline.transformSchema(Pipeline.scala:183)
+	at org.apache.spark.ml.tuning.ValidatorParams.$anonfun$transformSchemaImpl$2(ValidatorParams.scala:75)
+	at scala.collection.ArrayOps$.foreach$extension(ArrayOps.scala:1328)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl(ValidatorParams.scala:74)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl$(ValidatorParams.scala:70)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchemaImpl(TrainValidationSplit.scala:68)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchema(TrainValidationSplit.scala:182)
+	at org.apache.spark.ml.PipelineStage.transformSchema(Pipeline.scala:71)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.$anonfun$fit$1(TrainValidationSplit.scala:123)
+	at org.apache.spark.ml.util.Instrumentation$.$anonfun$instrumented$1(Instrumentation.scala:191)
+	at scala.util.Try$.apply(Try.scala:210)
+	at org.apache.spark.ml.util.Instrumentation$.instrumented(Instrumentation.scala:191)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.fit(TrainValidationSplit.scala:121)
+	at com.github.ristinak.MainObject$.main(MainObject.scala:143)
+	at com.github.ristinak.MainObject.main(MainObject.scala)
+
+22/08/25 11:15:38 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 11:15:38 ERROR util.Instrumentation: java.lang.IllegalArgumentException: requirement failed: The input column date must be either string type or numeric type, but got DateType.
+	at scala.Predef$.require(Predef.scala:337)
+	at org.apache.spark.ml.feature.StringIndexerBase.validateAndTransformField(StringIndexer.scala:107)
+	at org.apache.spark.ml.feature.StringIndexerBase.$anonfun$validateAndTransformSchema$2(StringIndexer.scala:126)
+	at scala.collection.ArrayOps$.flatMap$extension(ArrayOps.scala:964)
+	at org.apache.spark.ml.feature.StringIndexerBase.validateAndTransformSchema(StringIndexer.scala:123)
+	at org.apache.spark.ml.feature.StringIndexerBase.validateAndTransformSchema$(StringIndexer.scala:115)
+	at org.apache.spark.ml.feature.StringIndexer.validateAndTransformSchema(StringIndexer.scala:145)
+	at org.apache.spark.ml.feature.StringIndexer.transformSchema(StringIndexer.scala:252)
+	at org.apache.spark.ml.Pipeline.$anonfun$transformSchema$4(Pipeline.scala:183)
+	at scala.collection.ArrayOps$.foldLeft$extension(ArrayOps.scala:779)
+	at org.apache.spark.ml.Pipeline.transformSchema(Pipeline.scala:183)
+	at org.apache.spark.ml.tuning.ValidatorParams.$anonfun$transformSchemaImpl$2(ValidatorParams.scala:75)
+	at scala.collection.ArrayOps$.foreach$extension(ArrayOps.scala:1328)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl(ValidatorParams.scala:74)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl$(ValidatorParams.scala:70)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchemaImpl(TrainValidationSplit.scala:68)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchema(TrainValidationSplit.scala:182)
+	at org.apache.spark.ml.PipelineStage.transformSchema(Pipeline.scala:71)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.$anonfun$fit$1(TrainValidationSplit.scala:123)
+	at org.apache.spark.ml.util.Instrumentation$.$anonfun$instrumented$1(Instrumentation.scala:191)
+	at scala.util.Try$.apply(Try.scala:210)
+	at org.apache.spark.ml.util.Instrumentation$.instrumented(Instrumentation.scala:191)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.fit(TrainValidationSplit.scala:121)
+	at com.github.ristinak.MainObject$.main(MainObject.scala:143)
+	at com.github.ristinak.MainObject.main(MainObject.scala)
+
+22/08/25 11:17:38 ERROR util.Instrumentation: java.lang.IllegalArgumentException: Data type date of column date is not supported.
+	at org.apache.spark.ml.feature.VectorAssembler.transformSchema(VectorAssembler.scala:168)
+	at org.apache.spark.ml.Pipeline.$anonfun$transformSchema$4(Pipeline.scala:183)
+	at scala.collection.ArrayOps$.foldLeft$extension(ArrayOps.scala:779)
+	at org.apache.spark.ml.Pipeline.transformSchema(Pipeline.scala:183)
+	at org.apache.spark.ml.tuning.ValidatorParams.$anonfun$transformSchemaImpl$2(ValidatorParams.scala:75)
+	at scala.collection.ArrayOps$.foreach$extension(ArrayOps.scala:1328)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl(ValidatorParams.scala:74)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl$(ValidatorParams.scala:70)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchemaImpl(TrainValidationSplit.scala:68)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchema(TrainValidationSplit.scala:182)
+	at org.apache.spark.ml.PipelineStage.transformSchema(Pipeline.scala:71)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.$anonfun$fit$1(TrainValidationSplit.scala:123)
+	at org.apache.spark.ml.util.Instrumentation$.$anonfun$instrumented$1(Instrumentation.scala:191)
+	at scala.util.Try$.apply(Try.scala:210)
+	at org.apache.spark.ml.util.Instrumentation$.instrumented(Instrumentation.scala:191)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.fit(TrainValidationSplit.scala:121)
+	at com.github.ristinak.MainObject$.main(MainObject.scala:145)
+	at com.github.ristinak.MainObject.main(MainObject.scala)
+
+22/08/25 11:29:07 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 11:29:21 ERROR util.Instrumentation: java.lang.IllegalArgumentException: requirement failed: Output column ticker_index already exists.
+	at scala.Predef$.require(Predef.scala:337)
+	at org.apache.spark.ml.feature.StringIndexerBase.validateAndTransformField(StringIndexer.scala:110)
+	at org.apache.spark.ml.feature.StringIndexerBase.$anonfun$validateAndTransformSchema$2(StringIndexer.scala:126)
+	at scala.collection.ArrayOps$.flatMap$extension(ArrayOps.scala:964)
+	at org.apache.spark.ml.feature.StringIndexerBase.validateAndTransformSchema(StringIndexer.scala:123)
+	at org.apache.spark.ml.feature.StringIndexerBase.validateAndTransformSchema$(StringIndexer.scala:115)
+	at org.apache.spark.ml.feature.StringIndexer.validateAndTransformSchema(StringIndexer.scala:145)
+	at org.apache.spark.ml.feature.StringIndexer.transformSchema(StringIndexer.scala:252)
+	at org.apache.spark.ml.Pipeline.$anonfun$transformSchema$4(Pipeline.scala:183)
+	at scala.collection.ArrayOps$.foldLeft$extension(ArrayOps.scala:779)
+	at org.apache.spark.ml.Pipeline.transformSchema(Pipeline.scala:183)
+	at org.apache.spark.ml.tuning.ValidatorParams.$anonfun$transformSchemaImpl$2(ValidatorParams.scala:75)
+	at scala.collection.ArrayOps$.foreach$extension(ArrayOps.scala:1328)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl(ValidatorParams.scala:74)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl$(ValidatorParams.scala:70)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchemaImpl(TrainValidationSplit.scala:68)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchema(TrainValidationSplit.scala:182)
+	at org.apache.spark.ml.PipelineStage.transformSchema(Pipeline.scala:71)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.$anonfun$fit$1(TrainValidationSplit.scala:123)
+	at org.apache.spark.ml.util.Instrumentation$.$anonfun$instrumented$1(Instrumentation.scala:191)
+	at scala.util.Try$.apply(Try.scala:210)
+	at org.apache.spark.ml.util.Instrumentation$.instrumented(Instrumentation.scala:191)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.fit(TrainValidationSplit.scala:121)
+	at com.github.ristinak.MainObject$.main(MainObject.scala:152)
+	at com.github.ristinak.MainObject.main(MainObject.scala)
+
+22/08/25 11:53:42 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 11:53:42 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 11:53:42 WARN netlib.BLAS: Failed to load implementation from: com.github.fommil.netlib.NativeSystemBLAS
+22/08/25 11:53:42 WARN netlib.BLAS: Failed to load implementation from: com.github.fommil.netlib.NativeRefBLAS
+22/08/25 11:53:45 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 11:53:56 ERROR executor.Executor: Exception in task 0.0 in stage 575.0 (TID 516)
+org.apache.spark.SparkException: Failed to execute user defined function (StringIndexerModel$$Lambda$3842/514097844: (string) => double)
+	at org.apache.spark.sql.errors.QueryExecutionErrors$.failedExecuteUserDefinedFunctionError(QueryExecutionErrors.scala:136)
+	at org.apache.spark.sql.errors.QueryExecutionErrors.failedExecuteUserDefinedFunctionError(QueryExecutionErrors.scala)
+	at org.apache.spark.sql.catalyst.expressions.GeneratedClass$GeneratedIteratorForCodegenStage1.processNext(generated.java:340)
+	at org.apache.spark.sql.execution.BufferedRowIterator.hasNext(BufferedRowIterator.java:43)
+	at org.apache.spark.sql.execution.WholeStageCodegenExec$$anon$1.hasNext(WholeStageCodegenExec.scala:759)
+	at scala.collection.Iterator$$anon$9.hasNext(Iterator.scala:576)
+	at scala.collection.Iterator$$anon$9.hasNext(Iterator.scala:576)
+	at scala.collection.Iterator$$anon$9.hasNext(Iterator.scala:576)
+	at scala.collection.Iterator$$anon$9.hasNext(Iterator.scala:576)
+	at org.apache.spark.util.collection.ExternalSorter.insertAll(ExternalSorter.scala:197)
+	at org.apache.spark.shuffle.sort.SortShuffleWriter.write(SortShuffleWriter.scala:63)
+	at org.apache.spark.shuffle.ShuffleWriteProcessor.write(ShuffleWriteProcessor.scala:59)
+	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:99)
+	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:52)
+	at org.apache.spark.scheduler.Task.run(Task.scala:131)
+	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$3(Executor.scala:506)
+	at org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:1491)
+	at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:509)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)
+Caused by: org.apache.spark.SparkException: Unseen label: 2016-11-02. To handle unseen labels, set Param handleInvalid to keep.
+	at org.apache.spark.ml.feature.StringIndexerModel.$anonfun$getIndexer$1(StringIndexer.scala:406)
+	at org.apache.spark.ml.feature.StringIndexerModel.$anonfun$getIndexer$1$adapted(StringIndexer.scala:391)
+	at org.apache.spark.sql.catalyst.expressions.GeneratedClass$GeneratedIteratorForCodegenStage1.processNext(generated.java:338)
+	... 18 more
+22/08/25 11:53:56 WARN scheduler.TaskSetManager: Lost task 0.0 in stage 575.0 (TID 516) (LAPTOP-89ESGVHE executor driver): org.apache.spark.SparkException: Failed to execute user defined function (StringIndexerModel$$Lambda$3842/514097844: (string) => double)
+	at org.apache.spark.sql.errors.QueryExecutionErrors$.failedExecuteUserDefinedFunctionError(QueryExecutionErrors.scala:136)
+	at org.apache.spark.sql.errors.QueryExecutionErrors.failedExecuteUserDefinedFunctionError(QueryExecutionErrors.scala)
+	at org.apache.spark.sql.catalyst.expressions.GeneratedClass$GeneratedIteratorForCodegenStage1.processNext(generated.java:340)
+	at org.apache.spark.sql.execution.BufferedRowIterator.hasNext(BufferedRowIterator.java:43)
+	at org.apache.spark.sql.execution.WholeStageCodegenExec$$anon$1.hasNext(WholeStageCodegenExec.scala:759)
+	at scala.collection.Iterator$$anon$9.hasNext(Iterator.scala:576)
+	at scala.collection.Iterator$$anon$9.hasNext(Iterator.scala:576)
+	at scala.collection.Iterator$$anon$9.hasNext(Iterator.scala:576)
+	at scala.collection.Iterator$$anon$9.hasNext(Iterator.scala:576)
+	at org.apache.spark.util.collection.ExternalSorter.insertAll(ExternalSorter.scala:197)
+	at org.apache.spark.shuffle.sort.SortShuffleWriter.write(SortShuffleWriter.scala:63)
+	at org.apache.spark.shuffle.ShuffleWriteProcessor.write(ShuffleWriteProcessor.scala:59)
+	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:99)
+	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:52)
+	at org.apache.spark.scheduler.Task.run(Task.scala:131)
+	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$3(Executor.scala:506)
+	at org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:1491)
+	at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:509)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)
+Caused by: org.apache.spark.SparkException: Unseen label: 2016-11-02. To handle unseen labels, set Param handleInvalid to keep.
+	at org.apache.spark.ml.feature.StringIndexerModel.$anonfun$getIndexer$1(StringIndexer.scala:406)
+	at org.apache.spark.ml.feature.StringIndexerModel.$anonfun$getIndexer$1$adapted(StringIndexer.scala:391)
+	at org.apache.spark.sql.catalyst.expressions.GeneratedClass$GeneratedIteratorForCodegenStage1.processNext(generated.java:338)
+	... 18 more
+
+22/08/25 11:53:56 ERROR scheduler.TaskSetManager: Task 0 in stage 575.0 failed 1 times; aborting job
+22/08/25 12:00:42 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:00:43 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:00:43 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:02:04 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:02:05 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:02:05 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:02:19 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/25 12:02:20 WARN util.Instrumentation: [6e293ed4] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:02:20 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:04:48 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:04:50 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:04:50 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:05:01 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/25 12:05:02 WARN util.Instrumentation: [ec2f3003] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:05:02 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:06:57 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:06:57 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:07:00 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:07:09 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/25 12:07:10 WARN util.Instrumentation: [776136e6] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:07:10 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:16:22 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:16:28 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:16:28 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:21:46 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:21:46 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:21:48 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:21:56 WARN util.Instrumentation: [1471da39] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:21:56 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:21:56 ERROR util.Instrumentation: java.util.NoSuchElementException: Failed to find a default value for estimatorParamMaps
+	at org.apache.spark.ml.param.Params.$anonfun$getOrDefault$2(params.scala:756)
+	at scala.Option.getOrElse(Option.scala:201)
+	at org.apache.spark.ml.param.Params.getOrDefault(params.scala:756)
+	at org.apache.spark.ml.param.Params.getOrDefault$(params.scala:753)
+	at org.apache.spark.ml.PipelineStage.getOrDefault(Pipeline.scala:41)
+	at org.apache.spark.ml.param.Params.$(params.scala:762)
+	at org.apache.spark.ml.param.Params.$$(params.scala:762)
+	at org.apache.spark.ml.PipelineStage.$(Pipeline.scala:41)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl(ValidatorParams.scala:71)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl$(ValidatorParams.scala:70)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchemaImpl(TrainValidationSplit.scala:68)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchema(TrainValidationSplit.scala:182)
+	at org.apache.spark.ml.PipelineStage.transformSchema(Pipeline.scala:71)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.$anonfun$fit$1(TrainValidationSplit.scala:123)
+	at org.apache.spark.ml.util.Instrumentation$.$anonfun$instrumented$1(Instrumentation.scala:191)
+	at scala.util.Try$.apply(Try.scala:210)
+	at org.apache.spark.ml.util.Instrumentation$.instrumented(Instrumentation.scala:191)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.fit(TrainValidationSplit.scala:121)
+	at com.github.ristinak.MainObject$.main(MainObject.scala:223)
+	at com.github.ristinak.MainObject.main(MainObject.scala)
+
+22/08/25 12:23:29 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:23:29 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:23:34 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:23:38 WARN util.Instrumentation: [c9bb0ac1] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:23:38 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:23:38 ERROR util.Instrumentation: java.util.NoSuchElementException: Failed to find a default value for estimator
+	at org.apache.spark.ml.param.Params.$anonfun$getOrDefault$2(params.scala:756)
+	at scala.Option.getOrElse(Option.scala:201)
+	at org.apache.spark.ml.param.Params.getOrDefault(params.scala:756)
+	at org.apache.spark.ml.param.Params.getOrDefault$(params.scala:753)
+	at org.apache.spark.ml.PipelineStage.getOrDefault(Pipeline.scala:41)
+	at org.apache.spark.ml.param.Params.$(params.scala:762)
+	at org.apache.spark.ml.param.Params.$$(params.scala:762)
+	at org.apache.spark.ml.PipelineStage.$(Pipeline.scala:41)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl(ValidatorParams.scala:73)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl$(ValidatorParams.scala:70)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchemaImpl(TrainValidationSplit.scala:68)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchema(TrainValidationSplit.scala:182)
+	at org.apache.spark.ml.PipelineStage.transformSchema(Pipeline.scala:71)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.$anonfun$fit$1(TrainValidationSplit.scala:123)
+	at org.apache.spark.ml.util.Instrumentation$.$anonfun$instrumented$1(Instrumentation.scala:191)
+	at scala.util.Try$.apply(Try.scala:210)
+	at org.apache.spark.ml.util.Instrumentation$.instrumented(Instrumentation.scala:191)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.fit(TrainValidationSplit.scala:121)
+	at com.github.ristinak.MainObject$.main(MainObject.scala:229)
+	at com.github.ristinak.MainObject.main(MainObject.scala)
+
+22/08/25 12:25:51 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:25:51 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:25:53 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:26:00 WARN util.Instrumentation: [c291e6c6] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:26:00 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:29:52 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:29:52 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:29:54 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:30:02 WARN util.Instrumentation: [881ab81c] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:30:02 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:32:56 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:32:56 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:32:57 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:36:36 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:36:36 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:36:39 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:36:46 WARN util.Instrumentation: [1e2ed16a] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:36:46 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:36:47 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/25 12:41:41 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:41:41 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:41:48 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:41:50 WARN util.Instrumentation: [fbb28546] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:41:50 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:47:03 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:47:03 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:47:03 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:47:12 WARN util.Instrumentation: [b3d4c1b2] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:47:12 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:49:10 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:49:10 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:49:11 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:49:21 WARN util.Instrumentation: [b9d7611e] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:49:21 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:50:10 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:50:10 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:50:15 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:50:22 WARN util.Instrumentation: [c4baf1a7] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:50:22 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/25 12:52:50 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/25 12:52:50 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/25 12:52:57 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/25 12:53:00 WARN util.Instrumentation: [1eb80c2c] regParam is zero, which might cause numerical instability and overfitting.
+22/08/25 12:53:00 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK

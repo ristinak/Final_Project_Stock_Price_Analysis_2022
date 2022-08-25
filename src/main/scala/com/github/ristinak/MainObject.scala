@@ -3,11 +3,12 @@ package com.github.ristinak
 import com.github.ristinak.SparkUtil.{getSpark, readDataWithView}
 import org.apache.spark.sql.functions.{avg, col, desc, expr, lit, round, sqrt, stddev, sum, to_date, to_timestamp, when}
 import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}
-import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
+import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, MulticlassClassificationEvaluator}
 import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StringIndexer, VectorAssembler}
 import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
+import org.apache.spark.sql.DataFrame
 
 // TODO?: copy-paste the showAccuracy method that Valdis wrote - maybe unnecessary?
 // TODO: write a model to predict the closing price (regression)
@@ -95,33 +96,53 @@ object MainObject {
 
   // ******************* Building a model *******************
 
+    // adding column 'change' and casting column 'volume' to double
     val newDF = df.withColumn("change",
         when(col("dailyReturn_%") > 0, "UP")
       when(col("dailyReturn_%") < 0, "DOWN")
-    when(col("dailyReturn_%") === 0, "UNCHANGED")
-    )
+    when(col("dailyReturn_%") === 0, "UNCHANGED"))
+//      .withColumn("volume", col("volume").cast("double"))
+//      .withColumn("date", col("date").cast("string"))
 
     println("************* The newDF with the column 'change': **************")
     newDF.show(10, false)
 
+    // indexing string columns 'ticker', 'change', and 'date' //
+//    val indexer = new StringIndexer()
+////      .setInputCols(Array("ticker", "change", "date"))
+////      .setOutputCols(Array("ticker_index", "change_index", "date_index"))
+//      .setInputCols(Array("ticker", "change"))
+//      .setOutputCols(Array("ticker_index", "change_index"))
 
-    // indexing strings //
-    val indexer = new StringIndexer()
-      .setInputCols(Array("ticker", "change"))
-      .setOutputCols(Array("ticker_index", "change_index"))
+//    val dfIndexed = indexer.fit(newDF).transform(newDF)
 
-    val Array(train, test) = newDF.randomSplit(Array(0.7, 0.3))
+//    val myVecAssembler = new VectorAssembler()
+//      .setInputCols(Array("date_index", "open", "close", "high", "low", "volume", "ticker_index", "dailyReturn_%", "change_index"))
+//      .setOutputCol("logisticRFeatures")
+
+//    val dfVectorized = myVecAssembler.transform(dfIndexed)
+
+//    val Array(train, test) = newDF.randomSplit(Array(0.7, 0.3))
+
+    val train = newDF.where(col("date") < "2016-07-19")
+    val test = newDF.where(col("date") >= "2016-07-19")
+
+    println(s"Training set is ${train.count()} rows")
+    println(s"Test set is ${test.count()} rows")
 
     val rForm = new RFormula()
-    val lr = new LogisticRegression()
-    val stages = Array(indexer, rForm, lr)
+    val logisticR = new LogisticRegression()
+//    val stages = Array(indexer, rForm, logisticR)
+    val stages = Array(rForm, logisticR)
+//    val stages = Array(indexer, logisticR)
     val pipeline = new Pipeline().setStages(stages)
 
     val params = new ParamGridBuilder()
       .addGrid(rForm.formula, Array(
-        "change_index ~ ."))
-      .addGrid(lr.elasticNetParam, Array(0.0, 0.5, 1.0))
-      .addGrid(lr.regParam, Array(0.1, 2.0))
+//        "change_index ~ ."))
+        "change ~ ."))
+      .addGrid(logisticR.elasticNetParam, Array(0.0, 0.5, 1.0))
+      .addGrid(logisticR.regParam, Array(0.1, 2.0))
       .build()
 
     val evaluator = new BinaryClassificationEvaluator()
@@ -136,16 +157,18 @@ object MainObject {
       .setEvaluator(evaluator) //and this is the metric to judge our success
 
     val tvsFitted = tvs.fit(train) // fitting/making the best model
+    val tvsTransformed = tvsFitted.transform(test)
 
     //And of course evaluate how it performs on the test set!
-    println("Test Evaluation", evaluator.evaluate(tvsFitted.transform(test)))
+    println("Test Evaluation", evaluator.evaluate(tvsTransformed))
     println("Let's look at the prediction and how it compares to the real data:")
     tvsFitted.transform(test)
       .select("date", "open", "close", "volume", "ticker", "dailyReturn_%", "change", "label", "prediction", "probability")
-      .show(100, false)
+      .orderBy("date")
+      .show(50, false)
 
     val trainedPipeline = tvsFitted.bestModel.asInstanceOf[PipelineModel]
-    val TrainedLR = trainedPipeline.stages(2).asInstanceOf[LogisticRegressionModel]
+    val TrainedLR = trainedPipeline.stages(1).asInstanceOf[LogisticRegressionModel]
     val summaryLR = TrainedLR.summary
     summaryLR.objectiveHistory
     //Persisting and Applying Models
@@ -157,59 +180,65 @@ object MainObject {
       val dfRegr = df.withColumn("volume", col("volume").cast("double"))
         .withColumn("date", col("date").cast("string"))
 
-      dfRegr.printSchema()
-      dfRegr.show(10, false)
-      dfRegr.describe().show(false)
+//      dfRegr.printSchema()
+//      dfRegr.show(10, false)
+//      dfRegr.describe().show(false)
 
-      val indexedDate = new StringIndexer()
-        .setInputCol("date")
-        .setOutputCol("indexedDate")
+    // combined the two string indexers for 'date' and 'ticker' into one:
+    val indexing = new StringIndexer()
+      .setInputCols(Array("date", "ticker"))
+      .setOutputCols(Array("indexedDate", "indexedTicker"))
 
-      val indexedDateDfRegr = indexedDate.fit(dfRegr).transform(dfRegr)
+//      val indexedDate = new StringIndexer()
+//        .setInputCol("date")
+//        .setOutputCol("indexedDate")
+//
+//      val indexedDateDfRegr = indexedDate.fit(dfRegr).transform(dfRegr)
+//
+//      val indexedTicker = new StringIndexer()
+//        .setInputCol("ticker")
+//        .setOutputCol("indexedTicker")
 
-      val indexedTicker = new StringIndexer()
-        .setInputCol("ticker")
-        .setOutputCol("indexedTicker")
-
-      val indexedDfRegr = indexedTicker.fit(indexedDateDfRegr).transform(indexedDateDfRegr)
-
-      //val tknd = new Tokenizer()
-      //.setInputCol("ticker")
-      //.setOutputCol("tokenizedTicker")
-
-      //val tokenizedDfRegr = tknd.transform(dfRegr.select("ticker", "date", "high", "low", "open", "close", "volume", "dailyReturn_%"))
-      //.show(10, false)
-
-      //val usingRformula = new RFormula()
-      //.setFormula("close ~ .")
-      //.setLabelCol("label")
-      //.setFeaturesCol("features")
-
-      //val fittedfRegr = usingRformula.fit(indexedDfRegr).transform(indexedDfRegr)
-      //fittedfRegr.show(5, false)
-      //fittedfRegr.sample(0.1).show(5,false)
-
-      //val chgDate = new StringIndexer().setInputCol("date").setOutputCol("indexedDate")
-      //val changedDateDF = chgDate.fit(fittedfRegr).transform(fittedfRegr)
+      val indexedDF = indexing.fit(dfRegr).transform(dfRegr)
 
       val vecAssembler = new VectorAssembler()
         .setInputCols(Array("indexedDate", "open", "close", "high", "low", "volume", "indexedTicker", "dailyReturn_%"))
         .setOutputCol("features")
 
-      val dfIncVector = vecAssembler.transform(indexedDfRegr)
+    // added column 'label' in order to use method 'showAccuracy'
+      val dfIncVector = vecAssembler.transform(indexedDF).withColumn("label", col("close"))
 
-      val Array(trainData, testData) = dfIncVector.randomSplit(Array(0.7, 0.3))
+//      val Array(trainData, testData) = dfIncVector.randomSplit(Array(0.7, 0.3))
+
+    // split the train and test data according to date
+    val trainData = dfIncVector.where(col("date") < "2016-07-19")
+    val testData = dfIncVector.where(col("date") >= "2016-07-19")
 
       dfIncVector.show(10, false)
 
       val linearR = new LinearRegression()
         .setFeaturesCol("features")
         .setLabelCol("close")
+        .setPredictionCol("prediction")
 
-      val lrModel = linearR.fit(trainData).transform(testData)
+      val lrModel = linearR.fit(trainData)
+      val linearDF= lrModel.transform(testData)
 
-      lrModel.show(20, false)
+    // displaying only the important columns :)
+      linearDF.select("date", "ticker", "open", "close", "prediction", "dailyReturn_%").show(20, false)
 
 
+    def showAccuracy(df: DataFrame): Unit = {
+      // Select (prediction, true label) and compute test error.
+      val evaluator = new MulticlassClassificationEvaluator()
+        .setLabelCol("label")
+        .setPredictionCol("prediction")
+        .setMetricName("accuracy")
+      val accuracy = evaluator.evaluate(df) //in order for this to work we need label and prediction columns
+      println(s"DF size: ${df.count()} Accuracy $accuracy - Test Error = ${(1.0 - accuracy)}")
+    }
+
+    showAccuracy(tvsTransformed) // logistic regression
+    showAccuracy(linearDF) // linear regression
 
 }}
