@@ -1,7 +1,7 @@
 package com.github.ristinak
 
 import com.github.ristinak.SparkUtil.{getSpark, readDataWithView}
-import org.apache.spark.sql.functions.{avg, col, desc, expr, lit, round, sqrt, stddev, sum, to_date, to_timestamp, when}
+import org.apache.spark.sql.functions.{avg, col, desc, expr, lit, percent_rank, round, sqrt, stddev, sum, to_date, to_timestamp, when}
 import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}
 import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, MulticlassClassificationEvaluator}
 import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StringIndexer, VectorAssembler}
@@ -9,6 +9,7 @@ import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.expressions.Window
 
 // TODO?: copy-paste the showAccuracy method that Valdis wrote - maybe unnecessary?
 // TODO: write a model to predict the closing price (regression)
@@ -105,9 +106,9 @@ object MainObject {
     println("************* The newDF with the column 'change': **************")
     newDF.show(10, false)
 
-    val train = newDF.where(col("date") < "2016-07-19")
-    val test = newDF.where(col("date") >= "2016-07-19")
-
+    val rankDF = newDF.withColumn("rank", percent_rank().over(Window.partitionBy("ticker").orderBy("date")))
+    val train = rankDF.where("rank <= 0.7").drop("rank")
+    val test = rankDF.where("rank > 0.7").drop("rank")
 
     val rForm = new RFormula()
     val logisticReg = new LogisticRegression()
@@ -136,7 +137,7 @@ object MainObject {
     val tvsTransformed = tvsFitted.transform(test)
 
     //And of course evaluate how it performs on the test set!
-    println("Test Evaluation", evaluator.evaluate(tvsTransformed))
+    println("Test evaluation according to Binary Classification Evaluator: ", evaluator.evaluate(tvsTransformed))
     println("Let's look at the prediction and how it compares to the real data:")
     tvsTransformed
       .select("date", "open", "close", "volume", "ticker", "dailyReturn_%", "change", "label", "prediction", "probability")
