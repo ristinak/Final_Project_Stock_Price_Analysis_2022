@@ -3,11 +3,12 @@ package com.github.ristinak
 import com.github.ristinak.SparkUtil.{getSpark, readDataWithView}
 import org.apache.spark.sql.functions.{avg, col, desc, expr, lit, round, sqrt, stddev, sum, to_date, to_timestamp, when}
 import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}
-import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
+import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, MulticlassClassificationEvaluator}
 import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StringIndexer, VectorAssembler}
 import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
+import org.apache.spark.sql.DataFrame
 
 // TODO?: copy-paste the showAccuracy method that Valdis wrote - maybe unnecessary?
 // TODO: write a model to predict the closing price (regression)
@@ -104,24 +105,20 @@ object MainObject {
     println("************* The newDF with the column 'change': **************")
     newDF.show(10, false)
 
+    val train = newDF.where(col("date") < "2016-07-19")
+    val test = newDF.where(col("date") >= "2016-07-19")
 
-    // indexing strings //
-    val indexer = new StringIndexer()
-      .setInputCols(Array("ticker", "change"))
-      .setOutputCols(Array("ticker_index", "change_index"))
-
-    val Array(train, test) = newDF.randomSplit(Array(0.7, 0.3))
 
     val rForm = new RFormula()
-    val lr = new LogisticRegression()
-    val stages = Array(indexer, rForm, lr)
+    val logisticReg = new LogisticRegression()
+    val stages = Array(rForm, logisticReg)
     val pipeline = new Pipeline().setStages(stages)
 
     val params = new ParamGridBuilder()
       .addGrid(rForm.formula, Array(
-        "change_index ~ ."))
-      .addGrid(lr.elasticNetParam, Array(0.0, 0.5, 1.0))
-      .addGrid(lr.regParam, Array(0.1, 2.0))
+        "change ~ ."))
+      .addGrid(logisticReg.elasticNetParam, Array(0.0, 0.5, 1.0))
+      .addGrid(logisticReg.regParam, Array(0.1, 2.0))
       .build()
 
     val evaluator = new BinaryClassificationEvaluator()
@@ -136,20 +133,36 @@ object MainObject {
       .setEvaluator(evaluator) //and this is the metric to judge our success
 
     val tvsFitted = tvs.fit(train) // fitting/making the best model
+    val tvsTransformed = tvsFitted.transform(test)
 
     //And of course evaluate how it performs on the test set!
-    println("Test Evaluation", evaluator.evaluate(tvsFitted.transform(test)))
+    println("Test Evaluation", evaluator.evaluate(tvsTransformed))
     println("Let's look at the prediction and how it compares to the real data:")
-    tvsFitted.transform(test)
+    tvsTransformed
       .select("date", "open", "close", "volume", "ticker", "dailyReturn_%", "change", "label", "prediction", "probability")
-      .show(100, false)
+      .orderBy("date")
+      .show(50, false)
 
     val trainedPipeline = tvsFitted.bestModel.asInstanceOf[PipelineModel]
-    val TrainedLR = trainedPipeline.stages(2).asInstanceOf[LogisticRegressionModel]
+    val TrainedLR = trainedPipeline.stages(1).asInstanceOf[LogisticRegressionModel]
     val summaryLR = TrainedLR.summary
     summaryLR.objectiveHistory
     //Persisting and Applying Models
     //Now that we trained this model, we can persist it to disk to use it for prediction purposes later on:
     tvsFitted.write.overwrite().save("src/resources/tmp/modelLocation")
 
-}}
+
+    def showAccuracy(df: DataFrame): Unit = {
+      // Select (prediction, true label) and compute test error.
+      val evaluator = new MulticlassClassificationEvaluator()
+        .setLabelCol("label")
+        .setPredictionCol("prediction")
+        .setMetricName("accuracy")
+      val accuracy = evaluator.evaluate(df) //in order for this to work we need label and prediction columns
+      println(s"DF size: ${df.count()} Accuracy $accuracy - Test Error = ${(1.0 - accuracy)}")
+    }
+
+    showAccuracy(tvsTransformed) // logistic regression
+
+
+  }}
