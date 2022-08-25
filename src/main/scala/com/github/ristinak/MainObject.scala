@@ -11,8 +11,8 @@ import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.expressions.Window
 
-// TODO?: copy-paste the showAccuracy method that Valdis wrote - maybe unnecessary?
-// TODO: write a model to predict the closing price (regression)
+// Done: copy-paste the showAccuracy method that Valdis wrote - maybe unnecessary?
+// Done: write a model to predict the closing price (regression)
 // TODO: write scaladoc
 
 // DONE: check to see if another csv file can be used through program arguments:
@@ -28,6 +28,8 @@ import org.apache.spark.sql.expressions.Window
 object MainObject {
 
   def main(args: Array[String]): Unit = {
+
+    // *** Getting the dataframe from file and preparing it for analysis ***
 
     val filePath = if (!args.isEmpty) args(0) else "src/resources/stock_prices_.csv"
 
@@ -46,112 +48,125 @@ object MainObject {
     val dailyReturn = round(expr("(close - open)/open * 100"), 4)
     val df = dfWithDate.withColumn("dailyReturn_%", dailyReturn)
 
-    // saving this extended dataframe to a parquet file
-    df.write.mode("overwrite").parquet("src/resources/parquet/daily-returns.parquet")
+    // *** Calling our methods ***
 
-    // Daily returns of all stocks by date
-    println("Daily returns of all stocks by date:")
-    df.orderBy("date").select("date", "ticker", "dailyReturn_%").show(10, false)
-
-    // Average daily return of every stock
-    println("Average daily return of every stock:")
-    val avgDailyReturn = round(avg(col("dailyReturn_%")),2).as("avgDailyReturn_%")
-    df.groupBy("ticker").agg(avgDailyReturn).show(20, false)
-
-    // Average daily return of all stocks by date
-    println("Average daily return of all stocks by date:")
-    val dfAvgReturn = df.groupBy("date").agg(avgDailyReturn.as("average_return")).orderBy("date")
-    dfAvgReturn.show(20, false)
-    // saving daily return averages to a parquet file
-    dfAvgReturn.write.mode("overwrite").parquet("src/resources/parquet/average_return.parquet")
-
-    // Most frequently traded stocks on any one day
-    println("Most frequently traded stocks on a given day:")
-    val frequency = col("volume") * col("close")
-    val dfFreq = df.withColumn("frequency", frequency)
-    dfFreq.orderBy(desc("frequency")).show(10, false)
-
-    // Most frequently traded stocks on average
-    println("Most frequently traded stocks on average:")
-    dfFreq.groupBy("ticker")
-      .agg(sum("frequency").as("sumFrequency"), avg("frequency").as("avgFrequency"))
-      .select("ticker", "sumFrequency", "avgFrequency")
-      .orderBy(desc("avgFrequency"))
-      .show(10, false)
-
-    println("Read the parquet file of average daily returns:")
-    spark.read.parquet("src/resources/parquet/average_return.parquet").show(20, false)
-
+    showAverages(df, 10, saveAsCSV = true)
 
     // *** Bonus Question ***
     // Average and annualized average standard deviation of daily returns (volatility)
-    println("*** Bonus Question ***")
-    println("Stocks ordered by annualized volatility, %:")
+    showVolatility(df, saveAsCSV = true)
 
-    val volatility = round(stddev("dailyReturn_%"),2)
-    val annVolatility = round(col("Volatility") * sqrt(lit(252)),2)
-    val stdDevDF = df.groupBy("ticker").agg(volatility.as("Volatility"))
-      .withColumn("Annualized_Volatility", annVolatility)
+    LogisticPredictor(df, 30)
 
-    stdDevDF.orderBy(desc("Annualized_Volatility")).show()
+    def showAverages(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
 
-  // ******************* Building a model *******************
+      // Daily returns of all stocks by date
+      println("Daily returns of all stocks by date:")
+      df.orderBy("date").select("date", "ticker", "dailyReturn_%").show(10, false)
 
-    val newDF = df.withColumn("change",
+      // Average daily return of every stock
+      println("Average daily return of every stock:")
+      val avgDailyReturn = round(avg(col("dailyReturn_%")),2).as("avgDailyReturn_%")
+      df.groupBy("ticker").agg(avgDailyReturn).show(printLines, false)
+
+      // Average daily return of all stocks by date
+      println("Average daily return of all stocks by date:")
+      val dfAvgReturn = df.groupBy("date").agg(avgDailyReturn.as("average_return")).orderBy("date")
+      dfAvgReturn.show(printLines, false)
+
+      if (saveAsParquet) write2Parquet(dfAvgReturn, filepath = "src/resources/parquet/averages.parquet")
+      if (saveAsCSV) write2CSV(dfAvgReturn, filepath = "src/resources/csv/averages.csv")
+
+      // Most frequently traded stocks on any one day
+      println("Most frequently traded stocks on a given day:")
+      val frequency = col("volume") * col("close")
+      val dfFreq = df.withColumn("frequency", frequency)
+      dfFreq.orderBy(desc("frequency")).show(printLines, false)
+
+      // Most frequently traded stocks on average
+      println("Most frequently traded stocks on average:")
+      dfFreq.groupBy("ticker")
+        .agg(sum("frequency").as("sumFrequency"), avg("frequency").as("avgFrequency"))
+        .select("ticker", "sumFrequency", "avgFrequency")
+        .orderBy(desc("avgFrequency"))
+        .show(printLines, false)
+    }
+
+    def showVolatility(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
+
+      println("Stocks ordered by annualized volatility, %:")
+
+      val volatility = round(stddev("dailyReturn_%"),2)
+      val annVolatility = round(col("Volatility") * sqrt(lit(252)),2)
+      val stdDevDF = df.groupBy("ticker").agg(volatility.as("Volatility"))
+        .withColumn("Annualized_Volatility", annVolatility)
+
+      stdDevDF.orderBy(desc("Annualized_Volatility")).show(printLines, false)
+
+      if (saveAsParquet) write2Parquet(stdDevDF, filepath = "src/resources/parquet/volatility.parquet")
+      if (saveAsCSV) write2CSV(stdDevDF, filepath = "src/resources/csv/volatility.csv")
+
+    }
+
+    def write2Parquet(df: DataFrame, filepath: String = "src/resources/parquet/savedFile.parquet"): Unit = {
+      df.write.mode("overwrite").option("header", true).parquet(filepath)
+    }
+
+    def write2CSV(df: DataFrame, filepath: String = "src/resources/parquet/savedFile.parquet"): Unit = {
+      df.write.mode("overwrite").option("header", true).csv(filepath)
+    }
+
+    def LogisticPredictor(df: DataFrame, printLines:Int = 50): Unit = {
+
+      val newDF = df.withColumn("change",
         when(col("dailyReturn_%") > 0, "UP")
-      when(col("dailyReturn_%") < 0, "DOWN")
-    when(col("dailyReturn_%") === 0, "UNCHANGED")
-    )
+          when(col("dailyReturn_%") < 0, "DOWN")
+          when(col("dailyReturn_%") === 0, "UNCHANGED"))
 
-    println("************* The newDF with the column 'change': **************")
-    newDF.show(10, false)
+      val rankDF = newDF.withColumn("rank", percent_rank().over(Window.partitionBy("ticker").orderBy("date")))
+      val train = rankDF.where("rank <= 0.7").drop("rank")
+      val test = rankDF.where("rank > 0.7").drop("rank")
 
-    val rankDF = newDF.withColumn("rank", percent_rank().over(Window.partitionBy("ticker").orderBy("date")))
-    val train = rankDF.where("rank <= 0.7").drop("rank")
-    val test = rankDF.where("rank > 0.7").drop("rank")
+      val rForm = new RFormula()
+      val logisticReg = new LogisticRegression()
+      val stages = Array(rForm, logisticReg)
+      val pipeline = new Pipeline().setStages(stages)
 
-    val rForm = new RFormula()
-    val logisticReg = new LogisticRegression()
-    val stages = Array(rForm, logisticReg)
-    val pipeline = new Pipeline().setStages(stages)
+      val params = new ParamGridBuilder()
+        .addGrid(rForm.formula, Array("change ~ ."))
+        .addGrid(logisticReg.elasticNetParam, Array(0.0, 0.5, 1.0))
+        .addGrid(logisticReg.regParam, Array(0.1, 2.0))
+        .build()
 
-    val params = new ParamGridBuilder()
-      .addGrid(rForm.formula, Array(
-        "change ~ ."))
-      .addGrid(logisticReg.elasticNetParam, Array(0.0, 0.5, 1.0))
-      .addGrid(logisticReg.regParam, Array(0.1, 2.0))
-      .build()
+      val evaluator = new MulticlassClassificationEvaluator() // we have 3 possible outcomes
+        .setMetricName("accuracy")
+        .setPredictionCol("prediction")
+        .setLabelCol("label")
 
-    val evaluator = new BinaryClassificationEvaluator()
-      .setMetricName("areaUnderROC") //different Evaluators will have different metric options
-      .setRawPredictionCol("prediction")
-      .setLabelCol("label")
+      val tvs = new TrainValidationSplit()
+        .setTrainRatio(0.7) // the default is 0.75
+        .setEstimatorParamMaps(params) //so this is grid of different hyperparameters
+        .setEstimator(pipeline) //these are the various tasks we want done /transformations /
+        .setEvaluator(evaluator) //and this is the metric to judge our success
 
-    val tvs = new TrainValidationSplit()
-      .setTrainRatio(0.7) // the default is 0.75
-      .setEstimatorParamMaps(params) //so this is grid of different hyperparameters
-      .setEstimator(pipeline) //these are the various tasks we want done /transformations /
-      .setEvaluator(evaluator) //and this is the metric to judge our success
+      val tvsFitted = tvs.fit(train) // fitting/making the best model
+      val tvsTransformed = tvsFitted.transform(test)
 
-    val tvsFitted = tvs.fit(train) // fitting/making the best model
-    val tvsTransformed = tvsFitted.transform(test)
+      println(s"Model accuracy according to Multiclass Classification Evaluator: ${evaluator.evaluate(tvsTransformed)}")
+      println("Prediction and how it compares to the real data:")
+      tvsTransformed
+        .select("date", "open", "close", "volume", "ticker", "dailyReturn_%", "change", "label", "prediction", "probability")
+        .orderBy("date")
+        .show(printLines, false)
 
-    //And of course evaluate how it performs on the test set!
-    println("Test evaluation according to Binary Classification Evaluator: ", evaluator.evaluate(tvsTransformed))
-    println("Let's look at the prediction and how it compares to the real data:")
-    tvsTransformed
-      .select("date", "open", "close", "volume", "ticker", "dailyReturn_%", "change", "label", "prediction", "probability")
-      .orderBy("date")
-      .show(50, false)
-
-    val trainedPipeline = tvsFitted.bestModel.asInstanceOf[PipelineModel]
-    val TrainedLR = trainedPipeline.stages(1).asInstanceOf[LogisticRegressionModel]
-    val summaryLR = TrainedLR.summary
-    summaryLR.objectiveHistory
-    //Persisting and Applying Models
-    //Now that we trained this model, we can persist it to disk to use it for prediction purposes later on:
-    tvsFitted.write.overwrite().save("src/resources/tmp/modelLocation")
-
+      val trainedPipeline = tvsFitted.bestModel.asInstanceOf[PipelineModel]
+      val TrainedLR = trainedPipeline.stages(1).asInstanceOf[LogisticRegressionModel]
+      val summaryLR = TrainedLR.summary
+      summaryLR.objectiveHistory
+      //Persisting and Applying Models
+      //Now that we trained this model, we can persist it to disk to use it for prediction purposes later on:
+      tvsFitted.write.overwrite().save("src/resources/tmp/modelLocation")
+    }
 
     def showAccuracy(df: DataFrame): Unit = {
       // Select (prediction, true label) and compute test error.
@@ -162,8 +177,6 @@ object MainObject {
       val accuracy = evaluator.evaluate(df) //in order for this to work we need label and prediction columns
       println(s"DF size: ${df.count()} Accuracy $accuracy - Test Error = ${(1.0 - accuracy)}")
     }
-
-    showAccuracy(tvsTransformed) // logistic regression
 
 
   }}
