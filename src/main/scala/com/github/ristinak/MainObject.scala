@@ -109,7 +109,7 @@ object MainObject extends App {
     df.write.mode("overwrite").option("header", true).parquet(filepath)
   }
 
-  def write2CSV(df: DataFrame, filepath: String = "src/resources/parquet/savedFile.parquet"): Unit = {
+  def write2CSV(df: DataFrame, filepath: String = "src/resources/parquet/savedFile.csv"): Unit = {
     df.write.mode("overwrite").option("header", true).csv(filepath)
   }
 
@@ -243,17 +243,7 @@ object MainObject extends App {
     trainedLR.summary.objectiveHistory
 
     modelLR.write.overwrite().save("src/resources/tmp/linearRegressionModelLocation")
-    showAccuracy(predictionLR, labelColName = "close")
   }
 
-def showAccuracy(df: DataFrame, labelColName: String = "label"): Unit = {
-  // Select (prediction, true label) and compute test error.
-  val evaluator = new MulticlassClassificationEvaluator()
-    .setLabelCol(labelColName)
-    .setPredictionCol("prediction")
-    .setMetricName("accuracy")
-  val accuracy = evaluator.evaluate(df) //in order for this to work we need label and prediction columns
-  println(s"DF size: ${df.count()} Accuracy $accuracy - Test Error = ${(1.0 - accuracy)}")
-}
 
 }

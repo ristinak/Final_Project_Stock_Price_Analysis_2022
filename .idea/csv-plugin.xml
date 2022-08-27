@@ -24,6 +24,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\src\resources\csv\volatility.csv\part-00000-10ad2488-1ceb-4af6-9c36-0d1281df8454-c000.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\src\resources\stock_prices_.csv">
           <value>
             <Attribute>
