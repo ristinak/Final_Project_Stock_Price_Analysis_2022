@@ -17,6 +17,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\src\resources\csv\averages.csv\part-00000-05f0b5f7-c2b7-4d84-a054-510c63714608-c000.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\src\resources\stock_prices_.csv">
           <value>
             <Attribute>

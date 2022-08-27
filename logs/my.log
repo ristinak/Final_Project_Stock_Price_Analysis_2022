@@ -17235,3 +17235,122 @@ Caused by: org.apache.spark.SparkException: Unseen label: 2016-11-02. To handle 
 22/08/27 11:23:54 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
 22/08/27 11:24:08 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
 22/08/27 11:24:09 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/27 11:28:24 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/27 11:28:28 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/27 11:28:28 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/27 11:28:41 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/27 11:28:42 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/27 11:30:30 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/27 11:30:30 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/27 11:30:32 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/27 11:30:44 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/27 11:30:45 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/27 11:31:42 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/27 11:31:46 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/27 11:31:46 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/27 11:32:01 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/27 11:32:02 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/27 11:44:37 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/27 11:44:40 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/27 11:44:40 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/27 11:44:53 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/27 11:44:54 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK
+22/08/27 11:48:07 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/27 11:48:10 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/27 11:48:10 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/27 11:48:24 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/27 11:48:25 ERROR util.Instrumentation: java.lang.IllegalArgumentException: label does not exist. Available: date, open, high, low, close, volume, ticker, dailyReturn_%, indexedDate, encodedIndexedDate, indexedTicker, features
+	at org.apache.spark.sql.types.StructType.$anonfun$apply$1(StructType.scala:278)
+	at scala.collection.immutable.HashMap.getOrElse(HashMap.scala:683)
+	at org.apache.spark.sql.types.StructType.apply(StructType.scala:277)
+	at org.apache.spark.ml.util.SchemaUtils$.checkNumericType(SchemaUtils.scala:75)
+	at org.apache.spark.ml.PredictorParams.validateAndTransformSchema(Predictor.scala:54)
+	at org.apache.spark.ml.PredictorParams.validateAndTransformSchema$(Predictor.scala:47)
+	at org.apache.spark.ml.regression.LinearRegression.org$apache$spark$ml$regression$LinearRegressionParams$$super$validateAndTransformSchema(LinearRegression.scala:184)
+	at org.apache.spark.ml.regression.LinearRegressionParams.validateAndTransformSchema(LinearRegression.scala:123)
+	at org.apache.spark.ml.regression.LinearRegressionParams.validateAndTransformSchema$(LinearRegression.scala:111)
+	at org.apache.spark.ml.regression.LinearRegression.validateAndTransformSchema(LinearRegression.scala:184)
+	at org.apache.spark.ml.Predictor.transformSchema(Predictor.scala:177)
+	at org.apache.spark.ml.Pipeline.$anonfun$transformSchema$4(Pipeline.scala:183)
+	at scala.collection.ArrayOps$.foldLeft$extension(ArrayOps.scala:779)
+	at org.apache.spark.ml.Pipeline.transformSchema(Pipeline.scala:183)
+	at org.apache.spark.ml.tuning.ValidatorParams.$anonfun$transformSchemaImpl$2(ValidatorParams.scala:75)
+	at scala.collection.ArrayOps$.foreach$extension(ArrayOps.scala:1328)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl(ValidatorParams.scala:74)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl$(ValidatorParams.scala:70)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchemaImpl(TrainValidationSplit.scala:68)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchema(TrainValidationSplit.scala:182)
+	at org.apache.spark.ml.PipelineStage.transformSchema(Pipeline.scala:71)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.$anonfun$fit$1(TrainValidationSplit.scala:123)
+	at org.apache.spark.ml.util.Instrumentation$.$anonfun$instrumented$1(Instrumentation.scala:191)
+	at scala.util.Try$.apply(Try.scala:210)
+	at org.apache.spark.ml.util.Instrumentation$.instrumented(Instrumentation.scala:191)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.fit(TrainValidationSplit.scala:121)
+	at com.github.ristinak.MainObject$.LinearRegressionModel(MainObject.scala:222)
+	at com.github.ristinak.MainObject$.delayedEndpoint$com$github$ristinak$MainObject$1(MainObject.scala:51)
+	at com.github.ristinak.MainObject$delayedInit$body.apply(MainObject.scala:18)
+	at scala.Function0.apply$mcV$sp(Function0.scala:39)
+	at scala.Function0.apply$mcV$sp$(Function0.scala:39)
+	at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:17)
+	at scala.App.$anonfun$main$1(App.scala:76)
+	at scala.App.$anonfun$main$1$adapted(App.scala:76)
+	at scala.collection.IterableOnceOps.foreach(IterableOnce.scala:563)
+	at scala.collection.IterableOnceOps.foreach$(IterableOnce.scala:561)
+	at scala.collection.AbstractIterable.foreach(Iterable.scala:926)
+	at scala.App.main(App.scala:76)
+	at scala.App.main$(App.scala:74)
+	at com.github.ristinak.MainObject$.main(MainObject.scala:18)
+	at com.github.ristinak.MainObject.main(MainObject.scala)
+
+22/08/27 11:50:36 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/27 11:50:36 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/27 11:50:38 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/27 11:50:50 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/27 11:50:50 ERROR util.Instrumentation: java.lang.IllegalArgumentException: label does not exist. Available: date, open, high, low, close, volume, ticker, dailyReturn_%, indexedDate, encodedIndexedDate, indexedTicker, features
+	at org.apache.spark.sql.types.StructType.$anonfun$apply$1(StructType.scala:278)
+	at scala.collection.immutable.HashMap.getOrElse(HashMap.scala:683)
+	at org.apache.spark.sql.types.StructType.apply(StructType.scala:277)
+	at org.apache.spark.ml.util.SchemaUtils$.checkNumericType(SchemaUtils.scala:75)
+	at org.apache.spark.ml.PredictorParams.validateAndTransformSchema(Predictor.scala:54)
+	at org.apache.spark.ml.PredictorParams.validateAndTransformSchema$(Predictor.scala:47)
+	at org.apache.spark.ml.regression.LinearRegression.org$apache$spark$ml$regression$LinearRegressionParams$$super$validateAndTransformSchema(LinearRegression.scala:184)
+	at org.apache.spark.ml.regression.LinearRegressionParams.validateAndTransformSchema(LinearRegression.scala:123)
+	at org.apache.spark.ml.regression.LinearRegressionParams.validateAndTransformSchema$(LinearRegression.scala:111)
+	at org.apache.spark.ml.regression.LinearRegression.validateAndTransformSchema(LinearRegression.scala:184)
+	at org.apache.spark.ml.Predictor.transformSchema(Predictor.scala:177)
+	at org.apache.spark.ml.Pipeline.$anonfun$transformSchema$4(Pipeline.scala:183)
+	at scala.collection.ArrayOps$.foldLeft$extension(ArrayOps.scala:779)
+	at org.apache.spark.ml.Pipeline.transformSchema(Pipeline.scala:183)
+	at org.apache.spark.ml.tuning.ValidatorParams.$anonfun$transformSchemaImpl$2(ValidatorParams.scala:75)
+	at scala.collection.ArrayOps$.foreach$extension(ArrayOps.scala:1328)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl(ValidatorParams.scala:74)
+	at org.apache.spark.ml.tuning.ValidatorParams.transformSchemaImpl$(ValidatorParams.scala:70)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchemaImpl(TrainValidationSplit.scala:68)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.transformSchema(TrainValidationSplit.scala:182)
+	at org.apache.spark.ml.PipelineStage.transformSchema(Pipeline.scala:71)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.$anonfun$fit$1(TrainValidationSplit.scala:123)
+	at org.apache.spark.ml.util.Instrumentation$.$anonfun$instrumented$1(Instrumentation.scala:191)
+	at scala.util.Try$.apply(Try.scala:210)
+	at org.apache.spark.ml.util.Instrumentation$.instrumented(Instrumentation.scala:191)
+	at org.apache.spark.ml.tuning.TrainValidationSplit.fit(TrainValidationSplit.scala:121)
+	at com.github.ristinak.MainObject$.LinearRegressionModel(MainObject.scala:221)
+	at com.github.ristinak.MainObject$.delayedEndpoint$com$github$ristinak$MainObject$1(MainObject.scala:51)
+	at com.github.ristinak.MainObject$delayedInit$body.apply(MainObject.scala:18)
+	at scala.Function0.apply$mcV$sp(Function0.scala:39)
+	at scala.Function0.apply$mcV$sp$(Function0.scala:39)
+	at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:17)
+	at scala.App.$anonfun$main$1(App.scala:76)
+	at scala.App.$anonfun$main$1$adapted(App.scala:76)
+	at scala.collection.IterableOnceOps.foreach(IterableOnce.scala:563)
+	at scala.collection.IterableOnceOps.foreach$(IterableOnce.scala:561)
+	at scala.collection.AbstractIterable.foreach(Iterable.scala:926)
+	at scala.App.main(App.scala:76)
+	at scala.App.main$(App.scala:74)
+	at com.github.ristinak.MainObject$.main(MainObject.scala:18)
+	at com.github.ristinak.MainObject.main(MainObject.scala)
+
+22/08/27 11:52:59 WARN executor.ProcfsMetricsGetter: Exception when trying to compute pagesize, as a result reporting of ProcessTree metrics is stopped
+22/08/27 11:53:02 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.JNIBLAS
+22/08/27 11:53:02 WARN netlib.InstanceBuilder$NativeBLAS: Failed to load implementation from:dev.ludovic.netlib.blas.ForeignLinkerBLAS
+22/08/27 11:53:16 WARN util.package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+22/08/27 11:53:17 WARN netlib.InstanceBuilder$NativeLAPACK: Failed to load implementation from:dev.ludovic.netlib.lapack.JNILAPACK

@@ -1,0 +1,1 @@
+{"class":"org.apache.spark.ml.feature.VectorAssembler","timestamp":1661590400438,"sparkVersion":"3.2.2","uid":"vecAssembler_5c9e6fcd8f0e","paramMap":{"outputCol":"features","inputCols":["encodedIndexedDate","open","close","high","low","volume","indexedTicker","dailyReturn_%"]},"defaultParamMap":{"handleInvalid":"error","outputCol":"vecAssembler_5c9e6fcd8f0e__output"}}
