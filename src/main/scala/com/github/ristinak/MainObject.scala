@@ -175,7 +175,6 @@ object MainObject extends App {
       .withColumn("date", col("date").cast("string"))
 
     dfRegr.printSchema()
-    dfRegr.show(5, false)
     dfRegr.describe().show(false)
 
     val indexedDate = new StringIndexer()
@@ -208,7 +207,6 @@ object MainObject extends App {
     val pipeline = new Pipeline().setStages(stages)
 
     val evaluator = new RegressionEvaluator()
-      .setMetricName("rmse") //rootMeanSquaredError
       .setLabelCol("close")
       .setPredictionCol("prediction")
 
@@ -225,8 +223,7 @@ object MainObject extends App {
     val modelLR = tvs.fit(train)
     val predictionLR = modelLR.transform(test)
 
-    predictionLR.select("date", "volume", "ticker", "dailyReturn_%", "open", "close", "prediction").show(printLines, false)
-//      predictionLR.show(printLines, false)
+    predictionLR.show(printLines, false)
 
     val metrics = predictionLR.select("prediction", "close")
     val rm = new RegressionMetrics(metrics.rdd.map(x =>
@@ -237,13 +234,6 @@ object MainObject extends App {
     println("RMSE: " + rm.rootMeanSquaredError) //RMSE represents the square root of the variance of the residuals, the smaller number, the better
     println("R Squared: " + rm.r2) //R-Squared value of 0.9 would indicate that 90% of the variance of the dependent variable being studied is explained by the variance of the independent variable
 
-    val trainedPipeline = modelLR.bestModel.asInstanceOf[PipelineModel]
-    val trainedLR = trainedPipeline.stages(3).asInstanceOf[LinearRegressionModel]
-
-    trainedLR.summary.objectiveHistory
-
     modelLR.write.overwrite().save("src/resources/tmp/linearRegressionModelLocation")
   }
-
-
 }
