@@ -3,31 +3,21 @@ package com.github.ristinak
 import com.github.ristinak.SparkUtil.{getSpark, readDataWithView}
 import org.apache.spark.sql.functions.{avg, col, desc, expr, lit, percent_rank, round, sqrt, stddev, sum, to_date, to_timestamp, when}
 import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}
-import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, MulticlassClassificationEvaluator}
+import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, MulticlassClassificationEvaluator, RegressionEvaluator}
 import org.apache.spark.ml.feature.{OneHotEncoder, RFormula, StringIndexer, VectorAssembler}
-import org.apache.spark.ml.regression.LinearRegression
+import org.apache.spark.ml.regression.{LinearRegression, LinearRegressionModel}
 import org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
+import org.apache.spark.mllib.evaluation.RegressionMetrics
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.expressions.Window
 
-// Done: copy-paste the showAccuracy method that Valdis wrote - maybe unnecessary?
-// Done: write a model to predict the closing price (regression)
+
 // TODO: write scaladoc
 
-// DONE: check to see if another csv file can be used through program arguments:
-// In order to get the filepath for a different csv file, these steps are needed:
-// 1. download any two csv files from https://finance.yahoo.com/trending-tickers
-// 2. enter the filepaths for these csvs into csvCombiner.scala program
-// 3. change the outputPath value in csvCombiner.scala
-// 4. run the program
-// 5. the new filepath (outputPath) is now ready to be entered as 'program arguments':
-// in IntelliJ click Run -> Edit Configurations... -> enter the filepath into 'Program arguments'
+object MainObject extends App {
 
-
-object MainObject {
-
-  def main(args: Array[String]): Unit = {
+//  def main(args: Array[String]): Unit = {
 
     // *** Getting the dataframe from file and preparing it for analysis ***
 
@@ -57,6 +47,8 @@ object MainObject {
     showVolatility(df, saveAsCSV = true)
 
     LogisticPredictor(df, 30)
+
+    LinearRegressionModel(df)
 
     def showAverages(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
 
@@ -127,6 +119,9 @@ object MainObject {
       val train = rankDF.where("rank <= 0.7").drop("rank")
       val test = rankDF.where("rank > 0.7").drop("rank")
 
+      train.orderBy("date").show(30)
+      test.orderBy("date").show(30)
+
       val rForm = new RFormula()
       val logisticReg = new LogisticRegression()
       val stages = Array(rForm, logisticReg)
@@ -152,31 +147,97 @@ object MainObject {
       val tvsFitted = tvs.fit(train) // fitting/making the best model
       val tvsTransformed = tvsFitted.transform(test)
 
-      println(s"Model accuracy according to Multiclass Classification Evaluator: ${evaluator.evaluate(tvsTransformed)}")
       println("Prediction and how it compares to the real data:")
       tvsTransformed
         .select("date", "open", "close", "volume", "ticker", "dailyReturn_%", "change", "label", "prediction", "probability")
         .orderBy("date")
         .show(printLines, false)
+      println(s"Logistic Regression model accuracy according to Multiclass Classification Evaluator: ${evaluator.evaluate(tvsTransformed)}\n")
 
       val trainedPipeline = tvsFitted.bestModel.asInstanceOf[PipelineModel]
       val TrainedLR = trainedPipeline.stages(1).asInstanceOf[LogisticRegressionModel]
       val summaryLR = TrainedLR.summary
       summaryLR.objectiveHistory
-      //Persisting and Applying Models
-      //Now that we trained this model, we can persist it to disk to use it for prediction purposes later on:
+
       tvsFitted.write.overwrite().save("src/resources/tmp/modelLocation")
     }
 
-    def showAccuracy(df: DataFrame): Unit = {
-      // Select (prediction, true label) and compute test error.
-      val evaluator = new MulticlassClassificationEvaluator()
-        .setLabelCol("label")
+    def LinearRegressionModel(df: DataFrame, printLines:Int = 20): Unit = {
+
+      println("Linear Regression Model:")
+
+      val dfRegr = df.withColumn("volume", col("volume").cast("double"))
+        .withColumn("date", col("date").cast("string"))
+
+      dfRegr.printSchema()
+      dfRegr.show(5, false)
+      dfRegr.describe().show(false)
+
+      val indexedDate = new StringIndexer()
+        .setInputCol("date")
+        .setOutputCol("indexedDate")
+
+      val indexedDateDfRegr = indexedDate.fit(dfRegr).transform(dfRegr)
+
+      val encoder = new OneHotEncoder()
+        .setInputCol("indexedDate")
+        .setOutputCol("encodedIndexedDate")
+
+      val indexedTicker = new StringIndexer()
+        .setInputCol("ticker")
+        .setOutputCol("indexedTicker")
+
+      val vecAssembler = new VectorAssembler()
+        .setInputCols(Array("encodedIndexedDate", "open", "close", "high", "low", "volume", "indexedTicker", "dailyReturn_%"))
+        .setOutputCol("features")
+
+      val linearRegression = new LinearRegression()
+        .setFeaturesCol("features")
+        .setLabelCol("close")
+
+      val paramGrid = new ParamGridBuilder()
+        .addGrid(linearRegression.regParam, Array(0.1, 0.3, 0.5, 0.7))
+        .build()
+
+      val stages = Array(encoder, indexedTicker, vecAssembler, linearRegression)
+      val pipeline = new Pipeline().setStages(stages)
+
+      val evaluator = new RegressionEvaluator()
+        .setMetricName("rmse") //rootMeanSquaredError
+        .setLabelCol("close")
         .setPredictionCol("prediction")
-        .setMetricName("accuracy")
-      val accuracy = evaluator.evaluate(df) //in order for this to work we need label and prediction columns
-      println(s"DF size: ${df.count()} Accuracy $accuracy - Test Error = ${(1.0 - accuracy)}")
+
+      val tvs = new TrainValidationSplit()
+        .setEstimator(pipeline)
+        .setEstimatorParamMaps(paramGrid)
+        .setTrainRatio(0.75)
+        .setEvaluator(evaluator)
+
+      val rankDF = indexedDateDfRegr.withColumn("rank", percent_rank().over(Window.partitionBy("ticker").orderBy("date")))
+      val train = rankDF.where("rank <= 0.7").drop("rank")
+      val test = rankDF.where("rank > 0.7").drop("rank")
+
+      val modelLR = tvs.fit(train)
+      val predictionLR = modelLR.transform(test)
+
+      predictionLR.select("date", "open", "close", "volume", "ticker", "dailyReturn_%", "prediction").show(printLines, false)
+
+      val metrics = predictionLR.select("prediction", "close")
+      val rm = new RegressionMetrics(metrics.rdd.map(x =>
+        (x(0).asInstanceOf[Double], x(1).asInstanceOf[Double])))
+
+      println("Test data metrics:")
+      println("MAE: " + rm.meanAbsoluteError) //MAE measures the average magnitude of the errors in a set of predictions, without considering their direction.
+      println("RMSE: " + rm.rootMeanSquaredError) //RMSE represents the square root of the variance of the residuals, the smaller number, the better
+      println("R Squared: " + rm.r2) //R-Squared value of 0.9 would indicate that 90% of the variance of the dependent variable being studied is explained by the variance of the independent variable
+
+      val trainedPipeline = modelLR.bestModel.asInstanceOf[PipelineModel]
+      val trainedLR = trainedPipeline.stages(3).asInstanceOf[LinearRegressionModel]
+
+      trainedLR.summary.objectiveHistory
+
+      modelLR.write.overwrite().save("src/resources/tmp/linearRegressionModelLocation")
+
     }
 
-
-  }}
+}
