@@ -15,7 +15,15 @@ import org.apache.spark.sql.expressions.Window
 
 // TODO: write scaladoc
 
+/**
+ * object for analyzing dataframe
+ */
+
 object MainObject extends App {
+
+  /**
+   * gets the dataframe from file and prepares it for analysis
+   */
 
   // *** Getting the dataframe from file and preparing it for analysis ***
 
@@ -24,22 +32,42 @@ object MainObject extends App {
   println("Starting the final project")
   val spark = getSpark("Sparky")
 
+  /**
+   * saves the dataframe and drops any null values
+   */
+
   // saving the dataframe and dropping any null values
   val dfOriginal = readDataWithView(spark, filePath).na.drop("any")
+
+  /**
+   * converts date to fit the format yyyy-MM-dd
+   */
 
   // converting date to fit the format yyyy-MM-dd
   spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
   val dfWithDate = dfOriginal
     .withColumn("date", to_date(col("date"), "yyyy-MM-dd"))
 
+  /**
+   * adds column dailyReturn_% to our dataframe
+   */
+
   // adding column dailyReturn_% to our dataframe
   val dailyReturn = round(expr("(close - open)/open * 100"), 4)
   val df = dfWithDate.withColumn("dailyReturn_%", dailyReturn)
+
+
+  /**
+   * calls our methods
+   */
 
   // *** Calling our methods ***
 
   showAverages(df, 10, saveAsCSV = true)
 
+  /**
+   * calls our methods
+   */
   // *** Bonus Question ***
   // Average and annualized average standard deviation of daily returns (volatility)
 
@@ -54,6 +82,15 @@ object MainObject extends App {
   // Build a model trying to predict the next day's closing price
 
   LinearRegressionModel(df)
+
+  /**
+   * returns:
+   * daily returns of all stocks by date
+   * average daily return of every stock
+   * average daily return of all stocks by date
+   * most frequently traded stocks on a given day
+   * most frequently traded stocks on average
+   */
 
   def showAverages(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
 
