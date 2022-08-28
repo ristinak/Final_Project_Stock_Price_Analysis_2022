@@ -57,17 +57,10 @@ object MainObject extends App {
   val df = dfWithDate.withColumn("dailyReturn_%", dailyReturn)
 
 
-  /**
-   * calls our methods
-   */
-
   // *** Calling our methods ***
 
   showAverages(df, 10, saveAsCSV = true)
 
-  /**
-   * calls our methods
-   */
   // *** Bonus Question ***
   // Average and annualized average standard deviation of daily returns (volatility)
 
@@ -90,6 +83,10 @@ object MainObject extends App {
    * average daily return of all stocks by date
    * most frequently traded stocks on a given day
    * most frequently traded stocks on average
+   * @param df
+   * @param pintLines
+   * @param saveAsParquet
+   * @param saveAsCSV
    */
 
   def showAverages(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
@@ -126,6 +123,15 @@ object MainObject extends App {
       .show(printLines, false)
   }
 
+  /**
+   * returns:
+   * stocks ordered by annualized volatility, %
+   * @param df
+   * @param pintLines
+   * @param saveAsParquet
+   * @param saveAsCSV
+   */
+
   def showVolatility(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
 
     println("Stocks ordered by annualized volatility, %:")
@@ -142,13 +148,32 @@ object MainObject extends App {
 
   }
 
+  /**
+   * writes dataframe to a parquet file
+   * @param df
+   * @param filepath
+   */
+
   def write2Parquet(df: DataFrame, filepath: String = "src/resources/parquet/savedFile.parquet"): Unit = {
     df.write.mode("overwrite").option("header", true).parquet(filepath)
   }
 
-  def write2CSV(df: DataFrame, filepath: String = "src/resources/parquet/savedFile.csv"): Unit = {
+  /**
+   * writes dataframe to a csv file
+   * @param df
+   * @param filepath
+   */
+
+  def write2CSV(df: DataFrame, filepath: String = "src/resources/csv/savedFile.csv"): Unit = {
     df.write.mode("overwrite").option("header", true).csv(filepath)
   }
+
+  /**
+   * returns dataframe with predicted close value of a stock
+   * and saves best logistic regression model to a directory
+   * @param df
+   * @param printLines
+   */
 
   def LogisticPredictor(df: DataFrame, printLines:Int = 50): Unit = {
 
@@ -204,6 +229,12 @@ object MainObject extends App {
     tvsFitted.write.overwrite().save("src/resources/tmp/modelLocation")
   }
 
+  /**
+   * returns dataframe with predicted close value of a stock
+   * and saves best linear regression model to a directory
+   * @param df
+   * @param printLines
+   */
   def LinearRegressionModel(df: DataFrame, printLines:Int = 20): Unit = {
 
     println("Linear Regression Model:")
