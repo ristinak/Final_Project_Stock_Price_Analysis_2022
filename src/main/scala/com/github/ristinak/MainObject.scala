@@ -17,9 +17,9 @@ import org.apache.spark.sql.expressions.Window
  * object for analyzing dataframe
  */
 
-object MainObject {
+object MainObject extends App {
 
-  def main(args: Array[String]): Unit = {
+//  def main(args: Array[String]): Unit = {
     /**
      * gets the dataframe from file and prepares it for analysis
      */
@@ -294,5 +294,5 @@ object MainObject {
 
       modelLR.write.overwrite().save("src/resources/tmp/linearRegressionModelLocation")
     }
-}
+//}
 }
