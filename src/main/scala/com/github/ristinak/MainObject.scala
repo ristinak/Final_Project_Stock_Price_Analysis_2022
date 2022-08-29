@@ -219,8 +219,9 @@ object MainObject {
     }
 
     /**
-     * @return prints dataframe with predicted close value of a stock
-     *         and saves best linear regression model to a directory
+     * @return builds linear regression model predicting next days close value and
+     * prints dataframe with predicted close value of a stock,
+     * saves best linear regression model to a directory
      * @param df         dataframe
      * @param printLines how many lines to print, default 20
      */
