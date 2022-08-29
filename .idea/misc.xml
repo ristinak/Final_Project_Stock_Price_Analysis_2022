@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="azul-1.8" project-jdk-type="JavaSDK" />
+  <component name="ScaladocSettings">
+    <option name="outputDir" value="C:\Users\risti\IdeaProjects\Final_Project_Stock_Price_Analysis_2022\docs" />
+    <option name="additionalFlags" value="" />
+    <option name="maxHeapSize" value="" />
+    <option name="docTitle" value="Final_Project_Stock_Price_Analysis_2022 documentation" />
+    <option name="verbose" value="false" />
+    <option name="openInBrowser" value="true" />
+  </component>
 </project>

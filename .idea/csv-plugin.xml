@@ -17,20 +17,6 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\src\resources\csv\averages.csv\part-00000-05f0b5f7-c2b7-4d84-a054-510c63714608-c000.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\src\resources\csv\volatility.csv\part-00000-10ad2488-1ceb-4af6-9c36-0d1281df8454-c000.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="\src\resources\stock_prices_.csv">
           <value>
             <Attribute>
