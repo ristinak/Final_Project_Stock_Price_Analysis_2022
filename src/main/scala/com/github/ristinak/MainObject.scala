@@ -70,18 +70,17 @@ object MainObject extends App {
   LinearRegressionModel(df)
 
   /**
-   * @returns prints to screen:
+   * @return prints to screen:
    * daily returns of all stocks by date
    * average daily return of every stock
    * average daily return of all stocks by date
    * most frequently traded stocks on a given day
    * most frequently traded stocks on average
-   * @param df - dataframe
-   * @param printLines - how many lines to print, default 20
-   * @param saveAsParquet - default true, saves dfAvgReturn to parquet file
-   * @param saveAsCSV - default false, saves dfAvgReturn to CSV file
+   * @param df dataframe
+   * @param printLines how many lines to print, default 20
+   * @param saveAsParquet default true, saves dfAvgReturn to parquet file
+   * @param saveAsCSV default false, saves dfAvgReturn to CSV file
    */
-
   def showAverages(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
 
     // Daily returns of all stocks by date
@@ -117,14 +116,13 @@ object MainObject extends App {
   }
 
   /**
-   * @returns: prints to screen:
+   * @return prints to screen:
    * stocks ordered by annualized volatility, %
-   * @param df - dataframe
-   * @param printLines - how many lines to print, default 20
-   * @param saveAsParquet - default true, saves dfAvgReturn to parquet file
-   * @param saveAsCSV - default true, saves dfAvgReturn to CSV file
+   * @param df dataframe
+   * @param printLines how many lines to print, default 20
+   * @param saveAsParquet default true, saves dfAvgReturn to parquet file
+   * @param saveAsCSV default true, saves dfAvgReturn to CSV file
    */
-
   def showVolatility(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
 
     println("Stocks ordered by annualized volatility, %:")
@@ -142,32 +140,29 @@ object MainObject extends App {
   }
 
   /**
-   * @returns: writes dataframe to a parquet file
-   * @param df - dataframe
-   * @param filepath - filepath of the parquet file
+   * @return writes dataframe to a parquet file
+   * @param df dataframe
+   * @param filepath filepath of the parquet file
    */
-
   def write2Parquet(df: DataFrame, filepath: String = "src/resources/parquet/savedFile.parquet"): Unit = {
     df.write.mode("overwrite").option("header", true).parquet(filepath)
   }
 
   /**
-   * @returns: writes dataframe to a csv file
-   * @param df - dataframe
-   * @param filepath - filepath of the csv file
+   * @return writes dataframe to a csv file
+   * @param df dataframe
+   * @param filepath filepath of the csv file
    */
-
   def write2CSV(df: DataFrame, filepath: String = "src/resources/csv/savedFile.csv"): Unit = {
     df.write.mode("overwrite").option("header", true).csv(filepath)
   }
 
   /**
-   * @returns: prints dataframe with predicted change of a stock's closing price (up/down/no change)
+   * @return prints dataframe with predicted change of a stock's closing price (up/down/no change)
    * and saves best logistic regression model to a directory
-   * @param df - dataframe
-   * @param printLines - how many lines to print, default 20
+   * @param df dataframe
+   * @param printLines how many lines to print, default 20
    */
-
   def LogisticPredictor(df: DataFrame, printLines:Int = 20): Unit = {
 
     val newDF = df.withColumn("change",
@@ -223,10 +218,10 @@ object MainObject extends App {
   }
 
   /**
-   * @returns: prints dataframe with predicted close value of a stock
+   * @return prints dataframe with predicted close value of a stock
    * and saves best linear regression model to a directory
-   * @param df - dataframe
-   * @param printLines - how many lines to print, default 20
+   * @param df dataframe
+   * @param printLines how many lines to print, default 20
    */
   def LinearRegressionModel(df: DataFrame, printLines:Int = 20): Unit = {
 
