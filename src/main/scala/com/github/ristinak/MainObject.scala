@@ -13,8 +13,6 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.expressions.Window
 
 
-// TODO: write scaladoc
-
 /**
  * object for analyzing dataframe
  */
@@ -25,8 +23,6 @@ object MainObject extends App {
    * gets the dataframe from file and prepares it for analysis
    */
 
-  // *** Getting the dataframe from file and preparing it for analysis ***
-
   val filePath = if (!args.isEmpty) args(0) else "src/resources/stock_prices_.csv"
 
   println("Starting the final project")
@@ -36,14 +32,12 @@ object MainObject extends App {
    * saves the dataframe and drops any null values
    */
 
-  // saving the dataframe and dropping any null values
   val dfOriginal = readDataWithView(spark, filePath).na.drop("any")
 
   /**
    * converts date to fit the format yyyy-MM-dd
    */
 
-  // converting date to fit the format yyyy-MM-dd
   spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
   val dfWithDate = dfOriginal
     .withColumn("date", to_date(col("date"), "yyyy-MM-dd"))
@@ -52,7 +46,6 @@ object MainObject extends App {
    * adds column dailyReturn_% to our dataframe
    */
 
-  // adding column dailyReturn_% to our dataframe
   val dailyReturn = round(expr("(close - open)/open * 100"), 4)
   val df = dfWithDate.withColumn("dailyReturn_%", dailyReturn)
 
@@ -77,16 +70,16 @@ object MainObject extends App {
   LinearRegressionModel(df)
 
   /**
-   * returns:
+   * @returns prints to screen:
    * daily returns of all stocks by date
    * average daily return of every stock
    * average daily return of all stocks by date
    * most frequently traded stocks on a given day
    * most frequently traded stocks on average
-   * @param df
-   * @param pintLines
-   * @param saveAsParquet
-   * @param saveAsCSV
+   * @param df - dataframe
+   * @param printLines - how many lines to print, default 20
+   * @param saveAsParquet - default true, saves dfAvgReturn to parquet file
+   * @param saveAsCSV - default false, saves dfAvgReturn to CSV file
    */
 
   def showAverages(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
@@ -124,12 +117,12 @@ object MainObject extends App {
   }
 
   /**
-   * returns:
+   * @returns: prints to screen:
    * stocks ordered by annualized volatility, %
-   * @param df
-   * @param pintLines
-   * @param saveAsParquet
-   * @param saveAsCSV
+   * @param df - dataframe
+   * @param printLines - how many lines to print, default 20
+   * @param saveAsParquet - default true, saves dfAvgReturn to parquet file
+   * @param saveAsCSV - default true, saves dfAvgReturn to CSV file
    */
 
   def showVolatility(df: DataFrame, printLines: Int = 20, saveAsParquet: Boolean = true, saveAsCSV: Boolean = false): Unit = {
@@ -149,9 +142,9 @@ object MainObject extends App {
   }
 
   /**
-   * writes dataframe to a parquet file
-   * @param df
-   * @param filepath
+   * @returns: writes dataframe to a parquet file
+   * @param df - dataframe
+   * @param filepath - filepath of the parquet file
    */
 
   def write2Parquet(df: DataFrame, filepath: String = "src/resources/parquet/savedFile.parquet"): Unit = {
@@ -159,9 +152,9 @@ object MainObject extends App {
   }
 
   /**
-   * writes dataframe to a csv file
-   * @param df
-   * @param filepath
+   * @returns: writes dataframe to a csv file
+   * @param df - dataframe
+   * @param filepath - filepath of the csv file
    */
 
   def write2CSV(df: DataFrame, filepath: String = "src/resources/csv/savedFile.csv"): Unit = {
@@ -169,13 +162,13 @@ object MainObject extends App {
   }
 
   /**
-   * returns dataframe with predicted close value of a stock
+   * @returns: prints dataframe with predicted change of a stock's closing price (up/down/no change)
    * and saves best logistic regression model to a directory
-   * @param df
-   * @param printLines
+   * @param df - dataframe
+   * @param printLines - how many lines to print, default 20
    */
 
-  def LogisticPredictor(df: DataFrame, printLines:Int = 50): Unit = {
+  def LogisticPredictor(df: DataFrame, printLines:Int = 20): Unit = {
 
     val newDF = df.withColumn("change",
       when(col("dailyReturn_%") > 0, "UP")
@@ -230,10 +223,10 @@ object MainObject extends App {
   }
 
   /**
-   * returns dataframe with predicted close value of a stock
+   * @returns: prints dataframe with predicted close value of a stock
    * and saves best linear regression model to a directory
-   * @param df
-   * @param printLines
+   * @param df - dataframe
+   * @param printLines - how many lines to print, default 20
    */
   def LinearRegressionModel(df: DataFrame, printLines:Int = 20): Unit = {
 
