@@ -3,6 +3,11 @@ package com.github.ristinak
 import com.github.ristinak.SparkUtil.{getSpark, readDataWithView}
 import org.apache.spark.sql.functions.{col, lit}
 
+/**
+ * object for combining 2 CSV files
+ * with only required columns for analysis:
+ * date, open, high, low, close, volume, ticker
+ * */
 object csvCombiner extends App {
 
   val spark = getSpark("Sparky")
